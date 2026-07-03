@@ -4,6 +4,8 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Database\Factories\UserFactory;
+use Filament\Models\Contracts\FilamentUser;
+use Filament\Panel;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -23,10 +25,21 @@ use Illuminate\Support\Str;
     'referral_code', 'referred_by_id',
 ])]
 #[Hidden(['password', 'remember_token'])]
-class User extends Authenticatable
+class User extends Authenticatable implements FilamentUser
 {
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
+
+    /**
+     * Determine whether the user may access the given Filament panel.
+     *
+     * Foundation gate: any authenticated, non-guest user may access the admin
+     * panel. Tighten this (e.g. a role/permission check) before production.
+     */
+    public function canAccessPanel(Panel $panel): bool
+    {
+        return ! $this->is_guest;
+    }
 
     /**
      * Default attribute values, mirroring the database column defaults so
