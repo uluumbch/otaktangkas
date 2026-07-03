@@ -72,26 +72,29 @@ Players must **answer quiz questions correctly** to make game moves. This unique
 ## 🛠️ Technology Stack
 
 ### Backend
-- **Framework**: Laravel 11
-- **Language**: PHP 8.2+
-- **Real-time**: Pusher (WebSocket alternative)
-- **Database**: MySQL/PostgreSQL
+- **Framework**: Laravel 13
+- **Language**: PHP 8.4+ (8.3 minimum)
+- **Real-time**: Laravel Reverb (first-party, self-hosted WebSocket server)
+- **Database**: MySQL 8.4 LTS / PostgreSQL 16+
 - **Queue**: Laravel Queue (Redis-backed)
-- **Cache**: Redis
+- **Cache**: Redis 7
 
 ### Frontend
-- **UI Framework**: Livewire 3
-- **Styling**: Tailwind CSS
-- **JavaScript**: Alpine.js
+- **UI Framework**: Livewire 4
+- **Styling**: Tailwind CSS 4 (CSS-first configuration)
+- **JavaScript**: Alpine.js (bundled with Livewire)
 - **Build Tool**: Vite
 - **Icons**: Heroicons
 
+### Authentication
+- **Scaffolding**: Official Livewire starter kit (replaces Laravel Breeze)
+
 ### Admin Panel
-- **Framework**: Filament 3
+- **Framework**: Filament 5
 - **Features**: Question management, user management, analytics
 
 ### Third-Party Services
-- **Ads**: PropellerAds, Adsterra
+- **Ads**: PropellerAds, Adsterra *(post-MVP — Phase 6 deferred)*
 - **Analytics**: Google Analytics
 - **Error Tracking**: Sentry (optional)
 - **CDN**: Cloudflare
@@ -99,7 +102,7 @@ Players must **answer quiz questions correctly** to make game moves. This unique
 
 ### Development Tools
 - **Version Control**: Git
-- **Testing**: Pest PHP
+- **Testing**: Pest 4 (unit, feature, and Playwright-powered browser tests)
 - **Code Style**: Laravel Pint
 - **CI/CD**: GitHub Actions
 
@@ -144,16 +147,19 @@ Players must **answer quiz questions correctly** to make game moves. This unique
 - **Dynamic Selection**: Based on player level
 - **Admin Panel**: Easy question management
 
-### Monetization
+### Monetization (⏸️ Deferred — post-MVP)
+
+> Monetization (Phase 6) is **not part of the MVP**. The MVP scope ends at Solo Modes (Phase 5) + Launch (Phase 7). The features below are planned for after launch.
+
 - **Ads**: Non-intrusive banner and interstitial ads
 - **Premium**: Ad-free experience, exclusive features (Rp 29,000/month)
-- **Coins**: Optional in-app purchases (Phase 2)
+- **Coins**: Optional in-app purchases
 
 ---
 
 ## 📅 Development Timeline
 
-**Total Duration**: 6-8 weeks for MVP
+**Total Duration**: 5-7 weeks for MVP (monetization deferred to post-launch)
 
 ### Week 1: Setup + Foundation
 - Environment setup
@@ -204,16 +210,11 @@ Players must **answer quiz questions correctly** to make game moves. This unique
 
 **Deliverable**: All solo modes playable
 
-### Week 6: Monetization
-- Ad integration
-- Ad placement strategy
-- Premium subscription
-- Payment integration (basic)
-- Revenue tracking
+### ⏸️ Monetization (deferred to post-launch)
+- Ad integration, premium subscription, payment integration (Midtrans), revenue tracking
+- See [Phase 6: Monetization](PHASE_6_MONETIZATION.md) — implement after the MVP launch
 
-**Deliverable**: Monetization active
-
-### Week 7-8: Polish + Launch
+### Week 6-7: Polish + Launch
 - Performance optimization
 - SEO setup
 - Analytics integration
@@ -227,6 +228,8 @@ Players must **answer quiz questions correctly** to make game moves. This unique
 ---
 
 ## 📊 Success Metrics
+
+> **Note:** Revenue and premium-subscription targets below apply **post-MVP**, once Phase 6 (Monetization) ships after launch.
 
 ### Phase 1 (First Month)
 - **Users**: 1,000 registered users
@@ -267,7 +270,7 @@ Players must **answer quiz questions correctly** to make game moves. This unique
 4. [Phase 3: Frontend](PHASE_3_FRONTEND.md) - UI/UX components
 5. [Phase 4: Progression](PHASE_4_PROGRESSION.md) - XP, achievements, leaderboards
 6. [Phase 5: Solo Modes](PHASE_5_SOLO_MODES.md) - Practice and daily puzzles
-7. [Phase 6: Monetization](PHASE_6_MONETIZATION.md) - Ads and premium
+7. [Phase 6: Monetization](PHASE_6_MONETIZATION.md) - Ads and premium *(⏸️ deferred — post-MVP)*
 8. [Phase 7: Launch](PHASE_7_LAUNCH.md) - Deployment and marketing
 
 ### Technical Documentation
@@ -295,19 +298,20 @@ Players must **answer quiz questions correctly** to make game moves. This unique
 
 2. **Environment Setup**
    ```bash
-   # Clone repository
-   git clone https://github.com/uluumbch/tic-tac-toe-mp-livewire.git
-   cd tic-tac-toe-mp-livewire
+   # Create a fresh Laravel 13 app with the Livewire starter kit
+   laravel new otaktangkas --using=laravel/livewire-starter-kit
+   cd otaktangkas
    
-   # Install dependencies
-   composer install
+   # Install additional dependencies
+   composer require filament/filament spatie/laravel-permission
+   php artisan install:broadcasting   # installs Reverb + Echo
    npm install
    
    # Setup environment
    cp .env.example .env
    php artisan key:generate
    
-   # Configure database and Pusher in .env
+   # Configure database and Reverb in .env
    
    # Run migrations and seeds
    php artisan migrate --seed
@@ -315,8 +319,9 @@ Players must **answer quiz questions correctly** to make game moves. This unique
    # Build assets
    npm run dev
    
-   # Start server
+   # Start servers
    php artisan serve
+   php artisan reverb:start
    ```
 
 3. **Follow Phases**
@@ -350,12 +355,14 @@ Start with Phase 0 and work sequentially through each phase.
 - **Focus**: Educational tool → Consumer gaming platform
 - **Language**: English → Bahasa Indonesia
 - **Audience**: Students/Teachers → Casual gamers
-- **Monetization**: None → Ads + Premium
+- **Monetization**: None → Ads + Premium *(post-MVP — Phase 6 deferred)*
 - **Features**: Tournaments → Quick play + Daily puzzles
+- **Stack**: Upgraded to Laravel 13 + Livewire 4 + Tailwind CSS 4
+- **Real-time**: Pusher → Laravel Reverb (self-hosted, same protocol)
 
 ### What's Staying
-- Laravel 11 + Livewire 3 stack
-- Real-time gameplay with Pusher
+- Laravel + Livewire architecture
+- Real-time gameplay via WebSockets (Laravel Echo)
 - Question-based gameplay mechanic
 - Tic-Tac-Toe as core game
 - User authentication system
@@ -364,8 +371,8 @@ Start with Phase 0 and work sequentially through each phase.
 1. **Phase 0-1**: Set up new foundation alongside existing code
 2. **Phase 2-3**: Build new game engine and UI
 3. **Phase 4-5**: Add progression and solo modes
-4. **Phase 6**: Integrate monetization
-5. **Phase 7**: Deploy as separate platform or replace existing
+4. **Phase 7**: Deploy as separate platform or replace existing
+5. **Phase 6 (post-MVP)**: Integrate monetization after launch
 
 ---
 
@@ -395,11 +402,11 @@ This project is licensed under the MIT License - see the [LICENSE](../../LICENSE
 
 Ready to start? Head to [Phase 0: Setup](PHASE_0_SETUP.md) to begin your development journey!
 
-**Target Launch**: 8 weeks from project start
-**First Milestone**: MVP ready for beta testing in 6 weeks
-**Go Live**: Week 8 with initial marketing push
+**Target Launch**: 7 weeks from project start
+**First Milestone**: MVP ready for beta testing in 5 weeks
+**Go Live**: Week 7 with initial marketing push
 
 ---
 
-*Last Updated: February 2026*
-*Version: 1.0.0*
+*Last Updated: July 2026*
+*Version: 2.0.0*

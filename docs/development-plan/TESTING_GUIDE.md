@@ -1,10 +1,10 @@
 # TESTING GUIDE DOCUMENTATION
 
 **OtakTangkas Platform - Comprehensive Testing Guide**  
-**Version:** 1.0  
-**Last Updated:** 2025  
-**Testing Framework:** Pest PHP (with PHPUnit fallback)  
-**Browser Testing:** Laravel Dusk
+**Version:** 2.0  
+**Last Updated:** July 2026  
+**Testing Framework:** Pest 4 (PHPUnit under the hood)  
+**Browser Testing:** Pest 4 Browser Testing (Playwright-powered)
 
 ---
 
@@ -15,7 +15,7 @@
 3. [Unit Testing](#unit-testing)
 4. [Feature Testing](#feature-testing)
 5. [Livewire Component Testing](#livewire-component-testing)
-6. [Browser Testing (Dusk)](#browser-testing-dusk)
+6. [Browser Testing (Pest 4)](#browser-testing-pest-4)
 7. [Database Testing](#database-testing)
 8. [Real-Time Testing](#real-time-testing)
 9. [Performance Testing](#performance-testing)
@@ -38,7 +38,7 @@
 ```
         ┌─────────────┐
        /  E2E Tests   \     10% - Browser/Integration
-      /    (Dusk)      \
+      / (Pest Browser) \
      └─────────────────┘
     ┌───────────────────┐
    /  Feature Tests     \    30% - HTTP/Livewire
@@ -64,7 +64,7 @@
 | Unit | Test individual classes/methods | Pest/PHPUnit | Fast |
 | Feature | Test HTTP endpoints | Pest/PHPUnit | Medium |
 | Livewire | Test reactive components | Livewire Testing | Medium |
-| Browser | Test full user flows | Laravel Dusk | Slow |
+| Browser | Test full user flows | Pest 4 Browser (Playwright) | Slow |
 | Performance | Test response times | k6/Artillery | Varies |
 | Security | Test vulnerabilities | OWASP ZAP | Medium |
 
@@ -75,16 +75,16 @@
 ### Installation
 
 ```bash
-# Already included in composer.json
-composer require --dev pestphp/pest
-composer require --dev pestphp/pest-plugin-laravel
-composer require --dev laravel/dusk
+# Laravel 13 ships with Pest 4 by default — no installation needed.
+# If migrating an older project:
+composer require --dev pestphp/pest pestphp/pest-plugin-laravel
 
-# Initialize Pest
-php artisan pest:install
+# Add browser testing (replaces Laravel Dusk)
+composer require --dev pestphp/pest-plugin-browser
 
-# Install Dusk (for browser testing)
-php artisan dusk:install
+# Install the Playwright runtime used by browser tests
+npm install playwright
+npx playwright install chromium
 ```
 
 ### Environment Configuration
@@ -99,12 +99,12 @@ APP_DEBUG=true
 DB_CONNECTION=sqlite
 DB_DATABASE=:memory:
 
-CACHE_DRIVER=array
+CACHE_STORE=array
 QUEUE_CONNECTION=sync
 SESSION_DRIVER=array
 
 MAIL_MAILER=log
-BROADCAST_DRIVER=log
+BROADCAST_CONNECTION=log
 ```
 
 **Why SQLite in-memory:**
@@ -747,13 +747,16 @@ test('three wrong answers skip turn', function () {
 
 ---
 
-## Browser Testing (Dusk)
+## Browser Testing (Pest 4)
 
-### Setup Dusk
+Pest 4 ships first-class browser testing powered by **Playwright** — no separate Dusk suite, no ChromeDriver management. Browser tests live alongside regular Pest tests, use the full Laravel testing API (factories, `RefreshDatabase`, fakes), auto-wait for elements, and can run in parallel.
+
+### Setup
 
 ```bash
-php artisan dusk:install
-php artisan dusk:chrome-driver --detect
+composer require --dev pestphp/pest-plugin-browser
+npm install playwright
+npx playwright install chromium
 ```
 
 ### Complete User Flow Test
@@ -763,80 +766,72 @@ php artisan dusk:chrome-driver --detect
 ```php
 <?php
 
-namespace Tests\Browser;
-
 use App\Models\User;
 use App\Models\Category;
-use Laravel\Dusk\Browser;
-use Tests\DuskTestCase;
 
-class TournamentFlowTest extends DuskTestCase
-{
-    public function test_teacher_can_create_and_start_tournament()
-    {
-        $teacher = User::factory()->create()->assignRole('teacher');
-        $category = Category::factory()->create();
-        
-        $this->browse(function (Browser $browser) use ($teacher, $category) {
-            $browser->loginAs($teacher)
-                ->visit('/tournaments/create')
-                ->assertSee('Create Tournament')
-                ->type('name', 'Test Tournament')
-                ->select('category_id', $category->id)
-                ->press('Add Group')
-                ->type('groups[0][name]', 'Team Alpha')
-                ->press('Add Member')
-                ->type('groups[0][members][0]', 'Student 1')
-                ->press('Save Tournament')
-                ->assertPathIs('/tournaments/*')
-                ->assertSee('Tournament created successfully');
-        });
-    }
-    
-    public function test_student_can_join_match_and_make_move()
-    {
-        $student = User::factory()->create()->assignRole('student');
-        $match = Matches::factory()->create();
-        
-        $this->browse(function (Browser $browser) use ($student, $match) {
-            $browser->loginAs($student)
-                ->visit("/tournaments/{$match->tournament_id}/matches/{$match->id}")
-                ->assertSee('Join Match')
-                ->press('Join Match')
-                ->waitForText('Your Turn')
-                ->click('@board-cell-4') // Click middle cell
-                ->waitForText('Answer Question')
-                ->click('@answer-2') // Click correct answer
-                ->waitForText('Correct!')
-                ->assertSee('X'); // Move placed
-        });
-    }
-    
-    public function test_real_time_board_updates()
-    {
-        $user1 = User::factory()->create();
-        $user2 = User::factory()->create();
-        $match = Matches::factory()->create();
-        
-        $this->browse(function (Browser $first, Browser $second) use ($user1, $user2, $match) {
-            $first->loginAs($user1)
-                ->visit("/tournaments/{$match->tournament_id}/matches/{$match->id}");
-            
-            $second->loginAs($user2)
-                ->visit("/tournaments/{$match->tournament_id}/matches/{$match->id}");
-            
-            // User 1 makes move
-            $first->click('@board-cell-0')
-                ->waitForText('Answer Question')
-                ->click('@answer-correct');
-            
-            // User 2 sees the update in real-time
-            $second->waitForText('X', 5) // Wait up to 5 seconds
-                ->assertSee('Team Alpha\'s Turn');
-        });
-    }
-}
+it('allows a teacher to create and start a tournament', function () {
+    $teacher = User::factory()->create()->assignRole('teacher');
+    $category = Category::factory()->create();
+
+    $this->actingAs($teacher);
+
+    $page = visit('/tournaments/create');
+
+    $page->assertSee('Create Tournament')
+        ->fill('name', 'Test Tournament')
+        ->select('category_id', $category->id)
+        ->press('Add Group')
+        ->fill('groups[0][name]', 'Team Alpha')
+        ->press('Add Member')
+        ->fill('groups[0][members][0]', 'Student 1')
+        ->press('Save Tournament')
+        ->assertPathContains('/tournaments/')
+        ->assertSee('Tournament created successfully');
+});
+
+it('allows a student to join a match and make a move', function () {
+    $student = User::factory()->create()->assignRole('student');
+    $match = Matches::factory()->create();
+
+    $this->actingAs($student);
+
+    $page = visit("/tournaments/{$match->tournament_id}/matches/{$match->id}");
+
+    // Assertions auto-wait for the element/text to appear (Playwright)
+    $page->assertSee('Join Match')
+        ->press('Join Match')
+        ->assertSee('Your Turn')
+        ->click('@board-cell-4') // Click middle cell
+        ->assertSee('Answer Question')
+        ->click('@answer-2')     // Click correct answer
+        ->assertSee('Correct!')
+        ->assertSee('X');        // Move placed
+});
+
+it('updates the board in real time for the other player', function () {
+    [$user1, $user2] = User::factory()->count(2)->create();
+    $match = Matches::factory()->create();
+    $url = "/tournaments/{$match->tournament_id}/matches/{$match->id}";
+
+    // Two independent browser pages in one test
+    $this->actingAs($user1);
+    $first = visit($url);
+
+    $this->actingAs($user2);
+    $second = visit($url);
+
+    // User 1 makes a move
+    $first->click('@board-cell-0')
+        ->assertSee('Answer Question')
+        ->click('@answer-correct');
+
+    // User 2 sees the update in real time (auto-waits)
+    $second->assertSee('X')
+        ->assertSee("Team Alpha's Turn");
+});
 ```
+
+> **Tip:** Pest 4 browser tests also support device simulation (`->on()->mobile()`), color-scheme simulation, visual regression snapshots, and `->assertNoJavascriptErrors()` / `->assertNoConsoleLogs()` for smoke-testing pages.
 
 ---
 
@@ -1274,12 +1269,12 @@ jobs:
           --health-retries=3
     
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.2'
+          php-version: '8.4'
           extensions: mbstring, xml, ctype, iconv, intl, pdo_mysql, dom, filter, gd, json, bcmath
           coverage: xdebug
       
@@ -1315,7 +1310,7 @@ jobs:
         run: php artisan test --coverage --min=80
       
       - name: Upload Coverage to Codecov
-        uses: codecov/codecov-action@v3
+        uses: codecov/codecov-action@v4
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: ./coverage.xml
@@ -1482,13 +1477,13 @@ php artisan view:clear
 ## References
 
 - [Pest PHP Documentation](https://pestphp.com)
-- [Laravel Testing](https://laravel.com/docs/11.x/testing)
+- [Pest Browser Testing](https://pestphp.com/docs/browser-testing)
+- [Laravel Testing](https://laravel.com/docs/13.x/testing)
 - [Livewire Testing](https://livewire.laravel.com/docs/testing)
-- [Laravel Dusk](https://laravel.com/docs/11.x/dusk)
 - [k6 Load Testing](https://k6.io/docs/)
 
 ---
 
-**Document Version:** 1.0  
+**Document Version:** 2.0  
 **Maintained By:** OtakTangkas Development Team  
-**Last Review:** 2025-02-15
+**Last Review:** 2026-07-03

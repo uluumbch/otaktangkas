@@ -1,10 +1,10 @@
 # SYSTEM ARCHITECTURE DOCUMENTATION
 
 **OtakTangkas Platform - Complete Architecture Guide**  
-**Version:** 1.0  
-**Last Updated:** 2025  
-**Stack:** Laravel 11 + Livewire 3 + Alpine.js + Tailwind CSS  
-**Real-time:** Pusher (WebSockets)
+**Version:** 2.0  
+**Last Updated:** July 2026  
+**Stack:** Laravel 13 + Livewire 4 + Alpine.js + Tailwind CSS 4  
+**Real-time:** Laravel Reverb (WebSockets, first-party & self-hosted)
 
 ---
 
@@ -62,7 +62,7 @@
                            │
                            ▼
 ┌─────────────────────────────────────────────────────────────┐
-│              APPLICATION LAYER (Laravel 11)                 │
+│              APPLICATION LAYER (Laravel 13)                 │
 ├─────────────────────────────────────────────────────────────┤
 │  ┌───────────────┐  ┌───────────────┐  ┌────────────────┐ │
 │  │ HTTP Routes   │  │ Livewire      │  │ Controllers    │ │
@@ -85,7 +85,7 @@
             ▼              ▼              ▼
 ┌────────────────┐ ┌──────────────┐ ┌─────────────────┐
 │ DATABASE       │ │ CACHE LAYER  │ │ REAL-TIME       │
-│ (MySQL)        │ │ (Redis)      │ │ (Pusher)        │
+│ (MySQL)        │ │ (Redis)      │ │ (Reverb)        │
 ├────────────────┤ ├──────────────┤ ├─────────────────┤
 │ - Users        │ │ - Sessions   │ │ - WebSockets    │
 │ - Tournaments  │ │ - Query Cache│ │ - Match Events  │
@@ -112,31 +112,31 @@
 
 | Technology | Version | Purpose |
 |------------|---------|---------|
-| PHP | 8.2+ | Runtime environment |
-| Laravel | 11.x | Web application framework |
-| Livewire | 3.4+ | Full-stack reactive framework |
-| MySQL | 8.0+ | Primary database |
+| PHP | 8.4 (8.3 min) | Runtime environment |
+| Laravel | 13.x | Web application framework |
+| Livewire | 4.x | Full-stack reactive framework |
+| MySQL | 8.4 LTS | Primary database |
 | Redis | 7.0+ | Caching & session storage |
-| Pusher | Latest | Real-time WebSocket service |
+| Laravel Reverb | 1.x | Real-time WebSocket server (first-party, self-hosted) |
 
 ### Frontend
 
 | Technology | Version | Purpose |
 |------------|---------|---------|
 | Blade | Native | Server-side templating |
-| Alpine.js | 3.x | Lightweight JavaScript framework |
-| Tailwind CSS | 3.x | Utility-first CSS framework |
-| Livewire Wire | 3.x | Client-side Livewire handling |
+| Alpine.js | 3.x (bundled with Livewire) | Lightweight JavaScript framework |
+| Tailwind CSS | 4.x | Utility-first CSS framework (CSS-first config) |
+| Livewire | 4.x | Client-side Livewire handling |
 
 ### DevOps & Tools
 
 | Technology | Purpose |
 |------------|---------|
-| Laravel Breeze | Authentication scaffolding |
+| Livewire Starter Kit | Authentication scaffolding (replaces Breeze) |
 | Spatie Permission | Role-based access control |
-| Filament Forms | Admin panel forms |
+| Filament 5 | Admin panel (forms, tables, resources) |
 | Telescope | Debugging & monitoring |
-| Pest/PHPUnit | Testing framework |
+| Pest 4 | Testing framework (incl. browser testing) |
 | Laravel Pint | Code style fixer |
 
 ---
@@ -151,7 +151,7 @@ app/
 │   ├── Controllers/          # Traditional controllers
 │   │   ├── GameController.php
 │   │   ├── TournamentController.php
-│   │   └── Auth/             # Breeze authentication
+│   │   └── Auth/             # Starter kit authentication
 │   ├── Middleware/           # Request filters
 │   │   ├── Authenticate.php
 │   │   ├── CheckRole.php
@@ -362,18 +362,11 @@ resources/views/
         </main>
     </div>
 
-    <!-- Livewire Scripts -->
-    @livewireScripts
+    <!-- Livewire 4 auto-injects its scripts, and Alpine.js ships bundled
+         with Livewire — no CDN tags needed. -->
 
-    <!-- Alpine.js -->
-    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-
-    <!-- Pusher -->
-    <script src="https://js.pusher.com/8.2.0/pusher.min.js"></script>
-    <script>
-        // Global Pusher initialization
-        window.Pusher = Pusher;
-    </script>
+    <!-- Laravel Echo + the Reverb client are bundled through Vite
+         (resources/js/echo.js, loaded by the @vite directive in <head>) -->
 
     @stack('scripts')
 </body>
@@ -506,7 +499,7 @@ class Board extends Component
         x-transition:leave="ease-in duration-200"
         x-transition:leave-start="opacity-100"
         x-transition:leave-end="opacity-0"
-        class="fixed inset-0 bg-gray-500 bg-opacity-75"
+        class="fixed inset-0 bg-gray-500/75"
         @click="open = false"
     ></div>
 
@@ -529,24 +522,29 @@ class Board extends Component
 
 ## Real-Time Architecture
 
-### Pusher Configuration
+### Reverb Configuration
+
+Laravel Reverb is the first-party, self-hosted WebSocket server. It implements the Pusher protocol, so Laravel Echo and the `pusher-js` client work with it unchanged — without the per-message costs of a hosted service.
 
 ```php
-// config/broadcasting.php
+// config/broadcasting.php (created by `php artisan install:broadcasting`)
 'connections' => [
-    'pusher' => [
-        'driver' => 'pusher',
-        'key' => env('PUSHER_APP_KEY'),
-        'secret' => env('PUSHER_APP_SECRET'),
-        'app_id' => env('PUSHER_APP_ID'),
+    'reverb' => [
+        'driver' => 'reverb',
+        'key' => env('REVERB_APP_KEY'),
+        'secret' => env('REVERB_APP_SECRET'),
+        'app_id' => env('REVERB_APP_ID'),
         'options' => [
-            'cluster' => env('PUSHER_APP_CLUSTER'),
-            'useTLS' => true,
-            'encrypted' => true,
+            'host' => env('REVERB_HOST'),
+            'port' => env('REVERB_PORT', 443),
+            'scheme' => env('REVERB_SCHEME', 'https'),
+            'useTLS' => env('REVERB_SCHEME', 'https') === 'https',
         ],
     ],
 ],
 ```
+
+Run the server with `php artisan reverb:start` (managed by Supervisor in production — see [PHASE_7_LAUNCH.md](./PHASE_7_LAUNCH.md)).
 
 ### Broadcasting Events
 
@@ -693,7 +691,7 @@ class MatchChannel
 
 ```php
 // config/cache.php
-'default' => env('CACHE_DRIVER', 'redis'),
+'default' => env('CACHE_STORE', 'redis'),
 
 'stores' => [
     'redis' => [
@@ -1088,8 +1086,8 @@ class NotifyMatchPlayers
        │ 1. Login Request (email/nomor_induk + password)
        ▼
 ┌──────────────────────┐
-│  Laravel Breeze      │
-│  (Auth Controller)   │
+│  Livewire Starter Kit│
+│  (Auth Component)    │
 └──────┬───────────────┘
        │ 2. Validate credentials
        ▼
@@ -1292,7 +1290,7 @@ stdout_logfile=/var/www/storage/logs/worker.log
           │              │              │
           ▼              ▼              ▼
 ┌────────────────┐ ┌───────────┐ ┌──────────────┐
-│  Redis Cluster │ │  MySQL    │ │  Pusher      │
+│  Redis Cluster │ │  MySQL    │ │  Reverb      │
 │  (Cache+Queue) │ │  Database │ │  (WebSocket) │
 └────────────────┘ └───────────┘ └──────────────┘
 ```
@@ -1304,7 +1302,7 @@ stdout_logfile=/var/www/storage/logs/worker.log
 - [ ] Generate `APP_KEY`
 - [ ] Configure database credentials
 - [ ] Set Redis cache/queue
-- [ ] Configure Pusher credentials
+- [ ] Configure Reverb credentials & Supervisor process (`reverb:start`)
 - [ ] Set up SSL/TLS certificates
 - [ ] Configure CORS if needed
 - [ ] Set up monitoring (New Relic, Sentry)
@@ -1355,14 +1353,14 @@ composer require sentry/sentry-laravel
 
 ## References
 
-- [Laravel Documentation](https://laravel.com/docs/11.x)
+- [Laravel Documentation](https://laravel.com/docs/13.x)
 - [Livewire Documentation](https://livewire.laravel.com/docs)
 - [Alpine.js Documentation](https://alpinejs.dev)
-- [Pusher Documentation](https://pusher.com/docs)
+- [Laravel Reverb Documentation](https://laravel.com/docs/13.x/reverb)
 - [Tailwind CSS Documentation](https://tailwindcss.com/docs)
 
 ---
 
-**Document Version:** 1.0  
+**Document Version:** 2.0  
 **Maintained By:** OtakTangkas Development Team  
-**Last Review:** 2025-02-15
+**Last Review:** 2026-07-03

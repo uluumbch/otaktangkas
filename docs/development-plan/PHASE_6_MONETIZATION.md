@@ -1,5 +1,11 @@
 # Phase 6: Monetization Strategy
 
+> ## ⏸️ DEFERRED — Post-MVP
+>
+> **This phase is not part of the MVP.** The MVP scope runs Phase 0 → Phase 5 (Solo Modes), then Phase 7 (Launch). Monetization will be implemented **after** the platform launches and has an active user base.
+>
+> Skip this document during MVP development. Related pre-launch checklist items in [PHASE_7_LAUNCH.md](./PHASE_7_LAUNCH.md) are likewise marked post-MVP.
+
 ## Overview
 Complete monetization implementation for OtakTangkas, focused on ad-based revenue with optional premium subscriptions. Optimized for the Indonesian market with non-intrusive ad placement and local payment considerations.
 
@@ -364,7 +370,7 @@ class AdFrequencyService
         }
     }" 
          x-show="show"
-         class="fixed inset-0 bg-black bg-opacity-90 z-50 flex items-center justify-center p-4">
+         class="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4">
         
         <div class="bg-white rounded-xl max-w-2xl w-full p-6 relative">
             <!-- Close Button (appears after countdown) -->
@@ -444,7 +450,7 @@ class AdFrequencyService
 }">
     
     <!-- Offer Card -->
-    <div x-show="showOffer" class="bg-gradient-to-r from-yellow-400 to-yellow-600 rounded-xl p-6 text-white">
+    <div x-show="showOffer" class="bg-linear-to-r from-yellow-400 to-yellow-600 rounded-xl p-6 text-white">
         <div class="flex items-center justify-between">
             <div>
                 <h3 class="text-xl font-bold">Tonton Iklan, Dapat Reward!</h3>
@@ -465,7 +471,7 @@ class AdFrequencyService
     <!-- Ad Player -->
     <div x-show="showAd" 
          x-transition
-         class="fixed inset-0 bg-black bg-opacity-90 z-50 flex items-center justify-center">
+         class="fixed inset-0 bg-black/90 z-50 flex items-center justify-center">
         <div class="bg-white rounded-xl p-6 max-w-2xl w-full">
             <p class="text-center mb-4 text-gray-600">Menonton iklan...</p>
             <div class="ad-player min-h-[400px] bg-gray-100 rounded-lg flex items-center justify-center">
@@ -493,9 +499,9 @@ class AdFrequencyService
 
 ```php
 <?php
-// app/Http/Livewire/AdManager.php
+// app/Livewire/AdManager.php
 
-namespace App\Http\Livewire;
+namespace App\Livewire;
 
 use Livewire\Component;
 use App\Services\AdFrequencyService;
@@ -1205,5 +1211,5 @@ class CheckPremiumStatus
 
 ---
 
-**Last Updated:** 2024
-**Status:** Ready for Implementation
+**Last Updated:** July 2026
+**Status:** ⏸️ Deferred — implement post-MVP (after launch)

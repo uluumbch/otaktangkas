@@ -15,9 +15,10 @@ This directory contains comprehensive development documentation for the OtakTang
 Initial project setup including Laravel installation, environment configuration, and development tools.
 
 **Key Topics:**
-- Laravel 10 installation
+- Laravel 13 installation (Livewire starter kit)
 - Database setup (MySQL/PostgreSQL)
-- Livewire 3 configuration
+- Livewire 4 configuration
+- Laravel Reverb (real-time) setup
 - Git repository setup
 - Development environment
 
@@ -30,7 +31,7 @@ Initial project setup including Laravel installation, environment configuration,
 Core authentication, user management, and basic models.
 
 **Key Topics:**
-- User authentication (Breeze)
+- User authentication (Livewire starter kit)
 - User profiles and avatars
 - Category and Question models
 - Database migrations
@@ -60,7 +61,7 @@ Complete game logic, matchmaking, and real-time gameplay.
 Complete UI/UX implementation with Tailwind CSS and Livewire components.
 
 **Key Topics:**
-- Tailwind CSS configuration (custom colors, animations)
+- Tailwind CSS 4 configuration (CSS-first `@theme`: custom colors, animations)
 - App and Guest layouts
 - Dashboard design
 - Game board UI components
@@ -138,11 +139,11 @@ Single-player modes including AI opponent and daily puzzles.
 
 ---
 
-### [PHASE_6_MONETIZATION.md](./PHASE_6_MONETIZATION.md) 🆕 - Monetization
+### [PHASE_6_MONETIZATION.md](./PHASE_6_MONETIZATION.md) ⏸️ - Monetization (Deferred — post-MVP)
 **File Size:** 34 KB  
 **Estimated Time:** 3-4 days
 
-Revenue generation through ads and premium subscriptions.
+Revenue generation through ads and premium subscriptions. **This phase is deferred to post-MVP** — the MVP scope runs Phase 0 → Phase 5, then Phase 7 (Launch).
 
 **Key Topics:**
 - Ad network setup (PropellerAds, Adsterra)
@@ -175,7 +176,7 @@ Complete launch preparation, deployment, and post-launch monitoring.
 **Key Topics:**
 - Comprehensive pre-launch checklist (70+ items)
 - Testing procedures (unit, integration, browser, load)
-- Step-by-step deployment guide (Ubuntu 22.04)
+- Step-by-step deployment guide (Ubuntu 24.04 LTS)
 - Server setup and configuration (Nginx, PHP, MySQL, Redis)
 - Performance optimization techniques
 - SEO setup for Indonesian market
@@ -243,7 +244,7 @@ Complete system architecture guide covering backend, frontend, and real-time inf
 - Event and listener system architecture
 - Queue system architecture (Redis-based)
 - Caching strategy (L1/L2 cache layers)
-- Real-time architecture (Pusher/WebSockets)
+- Real-time architecture (Laravel Reverb/WebSockets)
 - Security architecture (auth, CSRF, XSS prevention)
 - Scalability considerations (horizontal scaling, read replicas)
 - Deployment architecture (load balancing, CDN)
@@ -267,9 +268,9 @@ Complete API documentation for Livewire components, HTTP routes, and real-time c
 
 **Key Topics:**
 - Livewire component endpoints (method reference)
-- Real-time event channels (Pusher channels)
+- Real-time event channels (Reverb channels, Pusher protocol)
 - Traditional HTTP routes (REST endpoints)
-- Authentication endpoints (Breeze)
+- Authentication endpoints (Livewire starter kit)
 - Rate limiting strategy and implementation
 - Complete request/response examples
 - Error handling patterns with status codes
@@ -295,11 +296,11 @@ Complete API documentation for Livewire components, HTTP routes, and real-time c
 Comprehensive testing guide covering unit, feature, browser, and load testing.
 
 **Key Topics:**
-- Testing environment setup (Pest PHP, Dusk)
+- Testing environment setup (Pest 4)
 - Unit testing guidelines (models, services)
 - Feature testing examples (auth, tournaments, matches)
 - Livewire component testing patterns
-- Browser testing with Laravel Dusk (E2E flows)
+- Browser testing with Pest 4 (Playwright-powered E2E flows)
 - Database testing with factories and seeders
 - Real-time event testing strategies
 - Performance testing (response time benchmarks)
@@ -311,7 +312,7 @@ Comprehensive testing guide covering unit, feature, browser, and load testing.
 
 **Production-Ready Content:**
 - ✅ Complete Pest test examples
-- ✅ Dusk browser test scenarios
+- ✅ Pest 4 browser test scenarios (Playwright)
 - ✅ Factory definitions for all models
 - ✅ CI/CD workflow configuration
 - ✅ Load testing scripts
@@ -327,8 +328,8 @@ Comprehensive testing guide covering unit, feature, browser, and load testing.
 2. **Core Features** → PHASE_1_FOUNDATION.md, PHASE_2_GAME_ENGINE.md
 3. **User Experience** → PHASE_3_FRONTEND.md, PHASE_4_PROGRESSION.md
 4. **Content** → PHASE_5_SOLO_MODES.md
-5. **Business** → PHASE_6_MONETIZATION.md
-6. **Launch** → PHASE_7_LAUNCH.md
+5. **Launch** → PHASE_7_LAUNCH.md
+6. **Business (post-MVP)** → PHASE_6_MONETIZATION.md (⏸️ deferred)
 
 ### By Feature
 - **Authentication & Users** → PHASE_1_FOUNDATION.md
@@ -336,7 +337,7 @@ Comprehensive testing guide covering unit, feature, browser, and load testing.
 - **UI Components** → PHASE_3_FRONTEND.md
 - **Rewards & Leveling** → PHASE_4_PROGRESSION.md
 - **AI & Puzzles** → PHASE_5_SOLO_MODES.md
-- **Ads & Premium** → PHASE_6_MONETIZATION.md
+- **Ads & Premium** → PHASE_6_MONETIZATION.md (⏸️ post-MVP)
 - **Deployment** → PHASE_7_LAUNCH.md
 
 ### Technical Reference
@@ -367,7 +368,7 @@ Comprehensive testing guide covering unit, feature, browser, and load testing.
 | Phase 3: Frontend | 42 KB | Implementation | 🆕 Complete |
 | Phase 4: Progression | 46 KB | Implementation | 🆕 Complete |
 | Phase 5: Solo Modes | 41 KB | Implementation | 🆕 Complete |
-| Phase 6: Monetization | 34 KB | Implementation | 🆕 Complete |
+| Phase 6: Monetization | 34 KB | Implementation | ⏸️ Deferred (post-MVP) |
 | Phase 7: Launch | 34 KB | Implementation | 🆕 Complete |
 | Database Schema | 44 KB | Reference | 🆕 Complete |
 | System Architecture | 42 KB | Reference | 🆕 Complete |
@@ -379,21 +380,23 @@ Comprehensive testing guide covering unit, feature, browser, and load testing.
 
 ## 🚀 Implementation Order
 
-### Recommended Sequence
+### Recommended Sequence (MVP)
 1. ✅ PHASE_0_SETUP (2-3 hours)
 2. ✅ PHASE_1_FOUNDATION (1-2 days)
 3. ✅ PHASE_2_GAME_ENGINE (3-4 days)
 4. 🆕 PHASE_3_FRONTEND (3-5 days)
 5. 🆕 PHASE_4_PROGRESSION (4-5 days)
 6. 🆕 PHASE_5_SOLO_MODES (5-6 days)
-7. 🆕 PHASE_6_MONETIZATION (3-4 days)
-8. 🆕 PHASE_7_LAUNCH (5-7 days)
+7. 🆕 PHASE_7_LAUNCH (5-7 days)
+
+**Post-MVP (after launch):**
+- ⏸️ PHASE_6_MONETIZATION (3-4 days)
 
 ### Parallel Tracks (If team > 1)
 - **Track A (Backend):** Phase 1 → Phase 2 → Phase 4 → Phase 5
 - **Track B (Frontend):** Phase 3 (after Phase 2)
-- **Track C (Business):** Phase 6 (after Phase 4)
-- **Track D (DevOps):** Phase 7 (after all others)
+- **Track C (DevOps):** Phase 7 (after all others)
+- **Track D (Business, post-MVP):** Phase 6 (after launch)
 
 ---
 
@@ -450,16 +453,24 @@ Each documentation file includes:
 - **Total Checkboxes:** 300+
 - **Code Languages:** PHP, Blade, JavaScript, SQL, Bash, Nginx, Python, YAML
 - **Frameworks Covered:** Laravel, Livewire, Tailwind, Alpine.js, Pest
-- **Services Covered:** Redis, MySQL, Nginx, Supervisor, Sentry, Pusher
+- **Services Covered:** Redis, MySQL, Nginx, Supervisor, Sentry, Laravel Reverb
 - **Documentation Lines:** 16,000+ lines of comprehensive documentation
 
 ---
 
 ## 🔄 Updates & Maintenance
 
-**Last Major Update:** 2025-02-15  
-**Version:** 2.0  
+**Last Major Update:** 2026-07-03  
+**Version:** 3.0  
 **Status:** Complete and Ready for Implementation
+
+### Recent Changes (v3.0)
+- ⬆️ **Tech stack refreshed to mid-2026 versions:** Laravel 13, PHP 8.4, Livewire 4, Filament 5, Tailwind CSS 4 (CSS-first config), Pest 4
+- 🔄 **Pusher replaced with Laravel Reverb** (first-party, self-hosted, same protocol)
+- 🔄 **Laravel Breeze replaced with the official Livewire starter kit**
+- 🔄 **Laravel Dusk replaced with Pest 4 browser testing** (Playwright)
+- ⏸️ **Phase 6 (Monetization) deferred to post-MVP** — MVP scope is Phase 0 → 5 + Phase 7 (Launch)
+- 🖥️ Deployment guide updated to Ubuntu 24.04 LTS, MySQL 8.4 LTS, Node.js 22
 
 ### Recent Additions (v2.0)
 - 🆕 Complete frontend UI/UX documentation (PHASE_3)
@@ -494,12 +505,12 @@ For questions about this documentation:
 
 ## 🏆 Success Metrics
 
-After completing all phases, you should have:
+After completing all MVP phases, you should have:
 - ✅ Fully functional multiplayer trivia game
 - ✅ AI opponent for solo play
 - ✅ Daily puzzle system
 - ✅ Complete progression system
-- ✅ Monetization implementation
+- ⏸️ Monetization implementation (post-MVP — Phase 6 deferred)
 - ✅ Production-ready deployment
 - ✅ Indonesian market optimization
 - ✅ **Complete database documentation with ERD**

@@ -74,12 +74,15 @@ Complete launch guide for OtakTangkas including pre-launch checklist, testing pr
 - [ ] Environment variables protected
 - [ ] Database backups automated
 
-### Monetization
-- [ ] Ad networks configured and tested
-- [ ] Ad placements non-intrusive
-- [ ] Premium subscription working
-- [ ] Payment gateway integrated
-- [ ] Revenue tracking implemented
+### Monetization (⏸️ Deferred — post-MVP)
+
+> Phase 6 (Monetization) is deferred to post-MVP. Skip these items for the initial launch; revisit them when Phase 6 is implemented.
+
+- [ ] ~~Ad networks configured and tested~~ (post-MVP)
+- [ ] ~~Ad placements non-intrusive~~ (post-MVP)
+- [ ] ~~Premium subscription working~~ (post-MVP)
+- [ ] ~~Payment gateway integrated~~ (post-MVP)
+- [ ] ~~Revenue tracking implemented~~ (post-MVP)
 
 ### Legal & Compliance
 - [ ] Terms of Service published
@@ -230,49 +233,41 @@ class GameFlowTest extends TestCase
 }
 ```
 
-### Browser Testing (Laravel Dusk)
+### Browser Testing (Pest 4)
 
 ```bash
-# Install Dusk
-composer require --dev laravel/dusk
-php artisan dusk:install
+# Install the Pest browser plugin (Playwright-powered, replaces Laravel Dusk)
+composer require --dev pestphp/pest-plugin-browser
+npm install playwright
+npx playwright install chromium
 
-# Run Dusk tests
-php artisan dusk
+# Run browser tests
+php artisan test tests/Browser
 ```
 
 ```php
 <?php
 // tests/Browser/GamePlayTest.php
 
-namespace Tests\Browser;
-
-use Tests\DuskTestCase;
-use Laravel\Dusk\Browser;
 use App\Models\User;
 
-class GamePlayTest extends DuskTestCase
-{
-    public function test_user_can_play_practice_game()
-    {
-        $user = User::factory()->create();
+it('lets a user play a practice game', function () {
+    $user = User::factory()->create();
 
-        $this->browse(function (Browser $browser) use ($user) {
-            $browser->loginAs($user)
-                ->visit('/practice')
-                ->select('difficulty', 'medium')
-                ->press('Mulai Main')
-                ->waitForText('Giliran Anda')
-                ->assertSee('Practice Mode')
-                ->click('.game-cell-0')
-                ->waitFor('.question-modal')
-                ->assertSee('Jawab Pertanyaan')
-                ->click('.answer-option-0')
-                ->pause(1000)
-                ->assertDontSee('.question-modal');
-        });
-    }
-}
+    $this->actingAs($user);
+
+    $page = visit('/practice');
+
+    // Assertions auto-wait for elements to appear (Playwright)
+    $page->select('difficulty', 'medium')
+        ->press('Mulai Main')
+        ->assertSee('Giliran Anda')
+        ->assertSee('Practice Mode')
+        ->click('.game-cell-0')
+        ->assertSee('Jawab Pertanyaan')
+        ->click('.answer-option-0')
+        ->assertDontSee('Jawab Pertanyaan');
+});
 ```
 
 ### Performance Testing
@@ -337,11 +332,11 @@ locust -f locustfile.py --host=https://otaktangkas.com
 ### Server Requirements
 
 ```
-- PHP 8.1 or higher
-- MySQL 8.0 or MariaDB 10.3+
-- Redis 6.0+
-- Node.js 18+
-- Composer 2.x
+- PHP 8.4 (8.3 minimum for Laravel 13)
+- MySQL 8.4 LTS or MariaDB 11+
+- Redis 7.0+
+- Node.js 22+ (LTS)
+- Composer 2.8+
 - Nginx or Apache
 - SSL Certificate
 - Minimum 2GB RAM
@@ -350,15 +345,17 @@ locust -f locustfile.py --host=https://otaktangkas.com
 
 ### Deployment Steps
 
-#### 1. Server Setup (Ubuntu 22.04)
+#### 1. Server Setup (Ubuntu 24.04 LTS)
 
 ```bash
 # Update system
 sudo apt update && sudo apt upgrade -y
 
-# Install PHP and extensions
-sudo apt install -y php8.1 php8.1-fpm php8.1-mysql php8.1-redis \
-    php8.1-mbstring php8.1-xml php8.1-curl php8.1-zip php8.1-gd
+# Install PHP 8.4 and extensions (via the ondrej/php PPA)
+sudo add-apt-repository ppa:ondrej/php -y
+sudo apt update
+sudo apt install -y php8.4 php8.4-fpm php8.4-mysql php8.4-redis \
+    php8.4-mbstring php8.4-xml php8.4-curl php8.4-zip php8.4-gd php8.4-intl
 
 # Install MySQL
 sudo apt install -y mysql-server
@@ -376,8 +373,8 @@ sudo systemctl enable nginx
 curl -sS https://getcomposer.org/installer | php
 sudo mv composer.phar /usr/local/bin/composer
 
-# Install Node.js
-curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
+# Install Node.js 22 (LTS)
+curl -fsSL https://deb.nodesource.com/setup_22.x | sudo -E bash -
 sudo apt install -y nodejs
 
 # Install Certbot for SSL
@@ -471,11 +468,32 @@ server {
     }
 
     location ~ \.php$ {
-        fastcgi_pass unix:/var/run/php/php8.1-fpm.sock;
+        fastcgi_pass unix:/var/run/php/php8.4-fpm.sock;
         fastcgi_index index.php;
         fastcgi_param SCRIPT_FILENAME $realpath_root$fastcgi_script_name;
         include fastcgi_params;
         fastcgi_hide_header X-Powered-By;
+    }
+
+    # Laravel Reverb (WebSockets) — proxy to the Reverb server
+    location ~ ^/app/ {
+        proxy_http_version 1.1;
+        proxy_set_header Host $http_host;
+        proxy_set_header Scheme $scheme;
+        proxy_set_header SERVER_PORT $server_port;
+        proxy_set_header REMOTE_ADDR $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "Upgrade";
+        proxy_pass http://127.0.0.1:8080;
+    }
+
+    # Reverb HTTP API (event publishing)
+    location ~ ^/apps/ {
+        proxy_http_version 1.1;
+        proxy_set_header Host $http_host;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_pass http://127.0.0.1:8080;
     }
 
     location ~ /\.(?!well-known).* {
@@ -500,7 +518,7 @@ sudo systemctl reload nginx
 sudo certbot --nginx -d otaktangkas.com -d www.otaktangkas.com
 ```
 
-#### 4. Queue Workers Setup
+#### 4. Queue Workers & Reverb Setup
 
 ```bash
 # Create supervisor config
@@ -523,11 +541,33 @@ stopwaitsecs=3600
 ```
 
 ```bash
+# Create supervisor config for the Reverb WebSocket server
+sudo nano /etc/supervisor/conf.d/otaktangkas-reverb.conf
+```
+
+```ini
+[program:otaktangkas-reverb]
+process_name=%(program_name)s
+command=php /var/www/otaktangkas/artisan reverb:start --host=127.0.0.1 --port=8080
+autostart=true
+autorestart=true
+stopasgroup=true
+killasgroup=true
+user=www-data
+redirect_stderr=true
+stdout_logfile=/var/www/otaktangkas/storage/logs/reverb.log
+stopwaitsecs=3600
+```
+
+```bash
 # Start supervisor
 sudo supervisorctl reread
 sudo supervisorctl update
 sudo supervisorctl start otaktangkas-worker:*
+sudo supervisorctl start otaktangkas-reverb:*
 ```
+
+> **Note:** In production, set `REVERB_HOST` to your domain, `REVERB_PORT=443`, and `REVERB_SCHEME=https` in `.env` so clients connect through the Nginx proxy above.
 
 #### 5. Scheduled Tasks
 
@@ -1287,7 +1327,7 @@ Total: Rp 2,500,000/month ($165/month)
 - Daily puzzle completion rate
 - Return rate (7-day, 30-day)
 
-**Monetization:**
+**Monetization (post-MVP, once Phase 6 ships):**
 - Ad impressions
 - Ad click-through rate (CTR)
 - Premium conversion rate
@@ -1314,14 +1354,14 @@ Month 2 Goals:
 - 1,500 DAU
 - 60% 7-day retention
 - 30,000+ games played
-- 20+ premium subscribers
+- 20+ premium subscribers (post-MVP, once Phase 6 ships)
 
 Month 3 Goals:
 - 10,000 registered users
 - 4,000 DAU
 - 55% 7-day retention
 - 100,000+ games played
-- 100+ premium subscribers
+- 100+ premium subscribers (post-MVP, once Phase 6 ships)
 - Break even on hosting costs
 ```
 
@@ -1388,7 +1428,7 @@ php artisan view:clear
 php artisan config:clear
 
 # Restart services
-sudo systemctl restart php8.1-fpm
+sudo systemctl restart php8.4-fpm
 sudo systemctl restart nginx
 ```
 
@@ -1422,14 +1462,14 @@ ORDER BY (data_length + index_length) DESC;
 
 ## Related Documentation
 - [PHASE_1_FOUNDATION.md](./PHASE_1_FOUNDATION.md)
-- [PHASE_2_CORE.md](./PHASE_2_CORE.md)
+- [PHASE_2_GAME_ENGINE.md](./PHASE_2_GAME_ENGINE.md)
 - [PHASE_3_FRONTEND.md](./PHASE_3_FRONTEND.md)
 - [PHASE_4_PROGRESSION.md](./PHASE_4_PROGRESSION.md)
 - [PHASE_5_SOLO_MODES.md](./PHASE_5_SOLO_MODES.md)
-- [PHASE_6_MONETIZATION.md](./PHASE_6_MONETIZATION.md)
+- [PHASE_6_MONETIZATION.md](./PHASE_6_MONETIZATION.md) (⏸️ deferred — post-MVP)
 
 ---
 
-**Last Updated:** 2024
+**Last Updated:** July 2026
 **Status:** Ready for Implementation
 **Priority:** HIGH - Complete before launch
