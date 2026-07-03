@@ -992,7 +992,7 @@ class LeaderboardService
         </div>
 
         <!-- Your Ranking -->
-        <div class="mt-6 bg-gradient-to-r from-primary-500 to-secondary-600 rounded-xl p-6 text-white">
+        <div class="mt-6 bg-linear-to-r from-primary-500 to-secondary-600 rounded-xl p-6 text-white">
             <h3 class="text-lg font-bold mb-4">Peringkat Kamu</h3>
             <div class="grid grid-cols-3 gap-4">
                 <div class="text-center">
@@ -1501,13 +1501,13 @@ class ProgressionService
 }" 
     x-show="show"
     x-transition
-    class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4">
+    class="fixed inset-0 bg-black/75 flex items-center justify-center z-50 p-4">
     
     <div class="bg-white rounded-2xl max-w-md w-full p-8 text-center" @click.away="show = false">
         
         <!-- Victory Animation -->
         <div class="mb-6">
-            <div class="w-24 h-24 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-full flex items-center justify-center mx-auto animate-bounce">
+            <div class="w-24 h-24 bg-linear-to-br from-yellow-400 to-yellow-600 rounded-full flex items-center justify-center mx-auto animate-bounce">
                 <i class="fas fa-trophy text-white text-5xl"></i>
             </div>
         </div>
@@ -1537,7 +1537,7 @@ class ProgressionService
 
             <!-- Level Up -->
             <template x-if="rewards.leveled_up">
-                <div class="p-4 bg-gradient-to-r from-primary-500 to-secondary-600 rounded-lg text-white">
+                <div class="p-4 bg-linear-to-r from-primary-500 to-secondary-600 rounded-lg text-white">
                     <p class="text-xl font-bold">🎉 LEVEL UP!</p>
                     <p class="text-lg">Level <span x-text="rewards.new_level"></span></p>
                 </div>
@@ -1619,11 +1619,11 @@ class ProgressionService
 ---
 
 ## Related Documentation
-- [PHASE_2_CORE.md](./PHASE_2_CORE.md)
+- [PHASE_2_GAME_ENGINE.md](./PHASE_2_GAME_ENGINE.md)
 - [PHASE_3_FRONTEND.md](./PHASE_3_FRONTEND.md)
 - [PHASE_5_SOLO_MODES.md](./PHASE_5_SOLO_MODES.md)
 
 ---
 
-**Last Updated:** 2024
+**Last Updated:** July 2026
 **Status:** Ready for Implementation

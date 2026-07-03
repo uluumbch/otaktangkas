@@ -1,9 +1,9 @@
 # DATABASE SCHEMA DOCUMENTATION
 
 **OtakTangkas Platform - Complete Database Schema**  
-**Version:** 1.0  
-**Last Updated:** 2025  
-**Database Engine:** MySQL 8.0+ / MariaDB 10.6+  
+**Version:** 2.0  
+**Last Updated:** July 2026  
+**Database Engine:** MySQL 8.4 LTS / MariaDB 11+  
 **Charset:** utf8mb4 (Unicode support for Indonesian characters)  
 **Collation:** utf8mb4_unicode_ci
 
@@ -224,7 +224,7 @@ CREATE TABLE `users` (
 - `nomor_induk`: Unique identifier for Indonesian students (NIS) or teachers (NIK)
 - `school_id`: Links to school (NULL for system admins)
 - `profile_photo_path`: Stores URL/path to profile picture
-- `email_verified_at`: Email verification timestamp (Laravel Breeze)
+- `email_verified_at`: Email verification timestamp (Livewire starter kit auth)
 - `remember_token`: For "Remember Me" functionality
 
 **Indonesian Context:**
@@ -1411,13 +1411,13 @@ php artisan migrate:fresh --seed
 
 ## References
 
-- [Laravel Migrations](https://laravel.com/docs/11.x/migrations)
-- [MySQL 8.0 Reference](https://dev.mysql.com/doc/refman/8.0/en/)
+- [Laravel Migrations](https://laravel.com/docs/13.x/migrations)
+- [MySQL 8.4 Reference](https://dev.mysql.com/doc/refman/8.4/en/)
 - [Spatie Laravel-Permission](https://spatie.be/docs/laravel-permission)
 - [Database Normalization](https://en.wikipedia.org/wiki/Database_normalization)
 
 ---
 
-**Document Version:** 1.0  
+**Document Version:** 2.0  
 **Maintained By:** OtakTangkas Development Team  
-**Last Review:** 2025-02-15
+**Last Review:** 2026-07-03

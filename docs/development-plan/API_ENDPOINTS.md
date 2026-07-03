@@ -1,8 +1,8 @@
 # API ENDPOINTS DOCUMENTATION
 
 **OtakTangkas Platform - Complete API Reference**  
-**Version:** 1.0  
-**Last Updated:** 2025  
+**Version:** 2.0  
+**Last Updated:** July 2026  
 **Architecture:** Livewire-First (Minimal Traditional REST)
 
 ---
@@ -39,7 +39,7 @@ OtakTangkas uses a **Livewire-first architecture**, meaning most API interaction
 ├─────────────────────────────────────────────────┤
 │  • Livewire Wire (AJAX handling)                │
 │  • Alpine.js (Client interactions)              │
-│  • Pusher (Real-time events)                    │
+│  • Laravel Echo → Reverb (Real-time events)     │
 └─────────────────────────────────────────────────┘
                      │
         ┌────────────┼────────────┐
@@ -63,9 +63,9 @@ OtakTangkas uses a **Livewire-first architecture**, meaning most API interaction
 
 ## Authentication
 
-### Authentication Endpoints (Laravel Breeze)
+### Authentication Endpoints (Livewire Starter Kit)
 
-All authentication handled by Laravel Breeze. No custom API tokens needed for web app.
+All authentication handled by the official Laravel Livewire starter kit (login, registration, password reset, email verification). No custom API tokens needed for web app.
 
 #### Login
 
@@ -865,7 +865,7 @@ Broadcast::channel('presence-match.{matchId}', function ($user, $matchId) {
 });
 ```
 
-**Events:**
+**Events** (Pusher-protocol event names — Reverb implements the same protocol):
 
 - `pusher:member_added`: User joins match
 - `pusher:member_removed`: User leaves match
@@ -1300,9 +1300,9 @@ POST /livewire/message/jawab-soal
 
 1. Records move in database
 2. Updates match state
-3. Broadcasts `MoveMade` event via Pusher
+3. Broadcasts `MoveMade` event via Reverb
 
-**Pusher Broadcast:**
+**Reverb Broadcast:**
 
 ```json
 {
@@ -1544,6 +1544,12 @@ Generate for external API testing
 
 ## Changelog
 
+**v2.0 (2026-07-03)**
+
+- Updated stack to Laravel 13 / Livewire 4
+- Replaced Pusher with Laravel Reverb (same protocol, self-hosted)
+- Replaced Breeze with the official Livewire starter kit
+
 **v1.0 (2025-02-15)**
 
 - Initial documentation
@@ -1553,6 +1559,6 @@ Generate for external API testing
 
 ---
 
-**Document Version:** 1.0  
+**Document Version:** 2.0  
 **Maintained By:** OtakTangkas Development Team  
-**Last Review:** 2025-02-15
+**Last Review:** 2026-07-03

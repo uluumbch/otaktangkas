@@ -18,101 +18,89 @@ Complete UI/UX implementation for OtakTangkas with mobile-first design, Tailwind
 
 ## Tailwind Configuration
 
-### Custom Configuration (`tailwind.config.js`)
+Tailwind CSS 4 uses **CSS-first configuration**: there is no `tailwind.config.js`. All design tokens live in `resources/css/app.css` via the `@theme` directive, and template detection is automatic (use `@source` only for non-standard paths).
 
-```javascript
-/** @type {import('tailwindcss').Config} */
-export default {
-  content: [
-    "./resources/**/*.blade.php",
-    "./resources/**/*.js",
-    "./resources/**/*.vue",
-    "./app/Http/Livewire/**/*.php",
-  ],
-  theme: {
-    extend: {
-      colors: {
-        // Brand colors optimized for Indonesian market
-        primary: {
-          50: '#f0f9ff',
-          100: '#e0f2fe',
-          200: '#bae6fd',
-          300: '#7dd3fc',
-          400: '#38bdf8',
-          500: '#0ea5e9', // Main brand color
-          600: '#0284c7',
-          700: '#0369a1',
-          800: '#075985',
-          900: '#0c4a6e',
-        },
-        secondary: {
-          50: '#fdf4ff',
-          100: '#fae8ff',
-          200: '#f5d0fe',
-          300: '#f0abfc',
-          400: '#e879f9',
-          500: '#d946ef',
-          600: '#c026d3',
-          700: '#a21caf',
-          800: '#86198f',
-          900: '#701a75',
-        },
-        success: '#10b981',
-        warning: '#f59e0b',
-        danger: '#ef4444',
-        info: '#3b82f6',
-      },
-      fontFamily: {
-        sans: ['Inter', 'system-ui', 'sans-serif'],
-        display: ['Poppins', 'system-ui', 'sans-serif'],
-      },
-      animation: {
-        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-        'bounce-slow': 'bounce 2s infinite',
-        'wiggle': 'wiggle 1s ease-in-out infinite',
-        'fade-in': 'fadeIn 0.5s ease-in-out',
-        'slide-up': 'slideUp 0.3s ease-out',
-        'slide-down': 'slideDown 0.3s ease-out',
-      },
-      keyframes: {
-        wiggle: {
-          '0%, 100%': { transform: 'rotate(-3deg)' },
-          '50%': { transform: 'rotate(3deg)' },
-        },
-        fadeIn: {
-          '0%': { opacity: '0' },
-          '100%': { opacity: '1' },
-        },
-        slideUp: {
-          '0%': { transform: 'translateY(10px)', opacity: '0' },
-          '100%': { transform: 'translateY(0)', opacity: '1' },
-        },
-        slideDown: {
-          '0%': { transform: 'translateY(-10px)', opacity: '0' },
-          '100%': { transform: 'translateY(0)', opacity: '1' },
-        },
-      },
-      boxShadow: {
-        'game': '0 10px 40px -10px rgba(0, 0, 0, 0.3)',
-        'card': '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
-      },
-      screens: {
-        'xs': '475px',
-      },
-    },
-  },
-  plugins: [
-    require('@tailwindcss/forms'),
-    require('@tailwindcss/typography'),
-  ],
+### Custom Configuration (`resources/css/app.css`)
+
+```css
+@import 'tailwindcss';
+
+/* Official plugins */
+@plugin '@tailwindcss/forms';
+@plugin '@tailwindcss/typography';
+
+@theme {
+  /* Brand colors optimized for Indonesian market */
+  --color-primary-50: #f0f9ff;
+  --color-primary-100: #e0f2fe;
+  --color-primary-200: #bae6fd;
+  --color-primary-300: #7dd3fc;
+  --color-primary-400: #38bdf8;
+  --color-primary-500: #0ea5e9; /* Main brand color */
+  --color-primary-600: #0284c7;
+  --color-primary-700: #0369a1;
+  --color-primary-800: #075985;
+  --color-primary-900: #0c4a6e;
+
+  --color-secondary-50: #fdf4ff;
+  --color-secondary-100: #fae8ff;
+  --color-secondary-200: #f5d0fe;
+  --color-secondary-300: #f0abfc;
+  --color-secondary-400: #e879f9;
+  --color-secondary-500: #d946ef;
+  --color-secondary-600: #c026d3;
+  --color-secondary-700: #a21caf;
+  --color-secondary-800: #86198f;
+  --color-secondary-900: #701a75;
+
+  --color-success: #10b981;
+  --color-warning: #f59e0b;
+  --color-danger: #ef4444;
+  --color-info: #3b82f6;
+
+  /* Fonts */
+  --font-sans: 'Inter', system-ui, sans-serif;
+  --font-display: 'Poppins', system-ui, sans-serif;
+
+  /* Custom animations */
+  --animate-pulse-slow: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  --animate-bounce-slow: bounce 2s infinite;
+  --animate-wiggle: wiggle 1s ease-in-out infinite;
+  --animate-fade-in: fadeIn 0.5s ease-in-out;
+  --animate-slide-up: slideUp 0.3s ease-out;
+  --animate-slide-down: slideDown 0.3s ease-out;
+
+  @keyframes wiggle {
+    0%, 100% { transform: rotate(-3deg); }
+    50% { transform: rotate(3deg); }
+  }
+  @keyframes fadeIn {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
+  }
+  @keyframes slideUp {
+    0% { transform: translateY(10px); opacity: 0; }
+    100% { transform: translateY(0); opacity: 1; }
+  }
+  @keyframes slideDown {
+    0% { transform: translateY(-10px); opacity: 0; }
+    100% { transform: translateY(0); opacity: 1; }
+  }
+
+  /* Custom shadows */
+  --shadow-game: 0 10px 40px -10px rgba(0, 0, 0, 0.3);
+  --shadow-card: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+
+  /* Extra breakpoint */
+  --breakpoint-xs: 475px;
 }
 ```
 
 ### Installation Checklist
-- [ ] Install Tailwind CSS dependencies: `npm install -D tailwindcss postcss autoprefixer`
-- [ ] Install plugins: `npm install -D @tailwindcss/forms @tailwindcss/typography`
+- [ ] Install Tailwind CSS 4: `npm install tailwindcss @tailwindcss/vite` (no PostCSS/autoprefixer needed)
+- [ ] Register the plugin in `vite.config.js` (see Phase 0)
+- [ ] Install plugins: `npm install -D @tailwindcss/forms @tailwindcss/typography` and load via `@plugin`
 - [ ] Install custom fonts from Google Fonts
-- [ ] Configure PostCSS
 - [ ] Build CSS: `npm run build`
 
 ---
@@ -152,13 +140,13 @@ export default {
 <body class="bg-gray-50 font-sans antialiased" x-data="{ sidebarOpen: false }">
     
     <!-- Navigation -->
-    <nav class="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-40">
+    <nav class="bg-white shadow-xs border-b border-gray-200 sticky top-0 z-40">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between h-16">
                 <!-- Logo -->
                 <div class="flex items-center">
                     <a href="{{ route('dashboard') }}" class="flex items-center space-x-2">
-                        <div class="w-10 h-10 bg-gradient-to-br from-primary-500 to-primary-600 rounded-lg flex items-center justify-center">
+                        <div class="w-10 h-10 bg-linear-to-br from-primary-500 to-primary-600 rounded-lg flex items-center justify-center">
                             <i class="fas fa-brain text-white text-xl"></i>
                         </div>
                         <span class="text-xl font-display font-bold text-gray-900 hidden sm:block">OtakTangkas</span>
@@ -188,7 +176,7 @@ export default {
 
                     <!-- Profile Dropdown -->
                     <div x-data="{ open: false }" class="relative">
-                        <button @click="open = !open" class="flex items-center space-x-2 focus:outline-none">
+                        <button @click="open = !open" class="flex items-center space-x-2 focus:outline-hidden">
                             <img src="{{ auth()->user()->avatar_url }}" alt="Avatar" class="w-9 h-9 rounded-full border-2 border-primary-500">
                         </button>
 
@@ -230,7 +218,7 @@ export default {
          x-transition:enter-start="opacity-0"
          x-transition:enter-end="opacity-100"
          class="fixed inset-0 z-50 md:hidden">
-        <div class="absolute inset-0 bg-gray-600 bg-opacity-75" @click="sidebarOpen = false"></div>
+        <div class="absolute inset-0 bg-gray-600/75" @click="sidebarOpen = false"></div>
         <div class="absolute right-0 top-0 h-full w-64 bg-white shadow-xl">
             <div class="p-4">
                 <button @click="sidebarOpen = false" class="absolute top-4 right-4 text-gray-500">
@@ -319,7 +307,7 @@ export default {
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @livewireStyles
 </head>
-<body class="bg-gradient-to-br from-primary-500 via-primary-600 to-secondary-600 min-h-screen flex items-center justify-center p-4">
+<body class="bg-linear-to-br from-primary-500 via-primary-600 to-secondary-600 min-h-screen flex items-center justify-center p-4">
     
     <div class="w-full max-w-md">
         <!-- Logo -->
@@ -358,7 +346,7 @@ export default {
     <div class="space-y-6">
         
         <!-- Welcome Banner -->
-        <div class="bg-gradient-to-r from-primary-500 to-secondary-600 rounded-2xl p-6 text-white shadow-xl">
+        <div class="bg-linear-to-r from-primary-500 to-secondary-600 rounded-2xl p-6 text-white shadow-xl">
             <div class="flex items-center justify-between">
                 <div>
                     <h1 class="text-2xl sm:text-3xl font-display font-bold">
@@ -447,7 +435,7 @@ export default {
             
             <!-- Quick Play -->
             <div class="bg-white rounded-xl shadow-card overflow-hidden group hover:shadow-xl transition-shadow">
-                <div class="bg-gradient-to-r from-primary-500 to-primary-600 p-6 text-white">
+                <div class="bg-linear-to-r from-primary-500 to-primary-600 p-6 text-white">
                     <div class="flex items-center justify-between">
                         <div>
                             <h3 class="text-xl font-bold">Quick Play</h3>
@@ -466,7 +454,7 @@ export default {
 
             <!-- Daily Puzzle -->
             <div class="bg-white rounded-xl shadow-card overflow-hidden group hover:shadow-xl transition-shadow">
-                <div class="bg-gradient-to-r from-secondary-500 to-secondary-600 p-6 text-white">
+                <div class="bg-linear-to-r from-secondary-500 to-secondary-600 p-6 text-white">
                     <div class="flex items-center justify-between">
                         <div>
                             <h3 class="text-xl font-bold">Puzzle Harian</h3>
@@ -572,7 +560,7 @@ export default {
 
             <!-- VS Badge -->
             <div class="text-center">
-                <div class="bg-gradient-to-r from-primary-500 to-secondary-600 text-white px-4 py-2 rounded-lg font-bold">
+                <div class="bg-linear-to-r from-primary-500 to-secondary-600 text-white px-4 py-2 rounded-lg font-bold">
                     VS
                 </div>
             </div>
@@ -661,7 +649,7 @@ export default {
 
     <!-- Question Modal -->
     @if($showQuestionModal)
-    <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50"
+    <div class="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50"
          x-data="{ show: true }"
          x-show="show"
          x-transition>
@@ -777,9 +765,9 @@ export default {
 
 ```php
 <?php
-// app/Http/Livewire/QuickPlay.php
+// app/Livewire/QuickPlay.php
 
-namespace App\Http\Livewire;
+namespace App\Livewire;
 
 use App\Models\Game;
 use App\Services\MatchmakingService;
@@ -866,7 +854,7 @@ class QuickPlay extends Component
         @if(!$searching)
             <!-- Start Screen -->
             <div>
-                <div class="w-24 h-24 bg-gradient-to-br from-primary-500 to-secondary-600 rounded-full flex items-center justify-center mx-auto mb-6">
+                <div class="w-24 h-24 bg-linear-to-br from-primary-500 to-secondary-600 rounded-full flex items-center justify-center mx-auto mb-6">
                     <i class="fas fa-bolt text-white text-5xl"></i>
                 </div>
                 
@@ -875,7 +863,7 @@ class QuickPlay extends Component
 
                 <button 
                     wire:click="startSearch"
-                    class="bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 text-white font-bold text-lg px-12 py-4 rounded-xl transition-all transform hover:scale-105 shadow-lg">
+                    class="bg-linear-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 text-white font-bold text-lg px-12 py-4 rounded-xl transition-all transform hover:scale-105 shadow-lg">
                     Mulai Cari Lawan
                 </button>
 
@@ -889,7 +877,7 @@ class QuickPlay extends Component
                 <div class="relative mb-6">
                     <div class="w-24 h-24 mx-auto">
                         <div class="absolute inset-0 bg-primary-500 rounded-full animate-ping opacity-75"></div>
-                        <div class="relative w-24 h-24 bg-gradient-to-br from-primary-500 to-secondary-600 rounded-full flex items-center justify-center">
+                        <div class="relative w-24 h-24 bg-linear-to-br from-primary-500 to-secondary-600 rounded-full flex items-center justify-center">
                             <i class="fas fa-search text-white text-4xl animate-pulse"></i>
                         </div>
                     </div>
@@ -1038,7 +1026,7 @@ class QuickPlay extends Component
          x-transition:enter="transition ease-out duration-300"
          x-transition:enter-start="opacity-0"
          x-transition:enter-end="opacity-100"
-         class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+         class="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
         <div class="bg-white rounded-xl p-6 max-w-md">
             <h3 class="text-xl font-bold mb-4">Modal Title</h3>
             <p>Modal content</p>
@@ -1072,10 +1060,10 @@ class QuickPlay extends Component
 ## Completion Checklist
 
 ### Setup Phase
-- [ ] Install and configure Tailwind CSS
-- [ ] Install @tailwindcss/forms and @tailwindcss/typography
-- [ ] Configure custom colors and fonts
-- [ ] Set up Alpine.js
+- [ ] Install and configure Tailwind CSS 4 (`@tailwindcss/vite` plugin)
+- [ ] Install @tailwindcss/forms and @tailwindcss/typography (loaded via `@plugin`)
+- [ ] Configure custom colors and fonts in `@theme` (`resources/css/app.css`)
+- [ ] Verify Alpine.js works (bundled with Livewire 4 — no separate setup)
 - [ ] Install Font Awesome icons
 
 ### Layout Implementation
@@ -1123,39 +1111,39 @@ class QuickPlay extends Component
 # Rebuild CSS
 npm run build
 
-# Check content paths in tailwind.config.js
+# Tailwind 4 detects templates automatically; if classes come from a
+# non-standard path (e.g. vendor packages), add an @source line in
+# resources/css/app.css
 # Clear browser cache
 ```
 
 **Alpine.js not initializing**
 ```html
-<!-- Ensure Alpine is loaded -->
-<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-
-<!-- Or via Vite -->
-import Alpine from 'alpinejs'
-window.Alpine = Alpine
-Alpine.start()
+<!-- Alpine is bundled with Livewire 4 and starts automatically. -->
+<!-- Do NOT load Alpine separately (via CDN or import) — a second
+     instance breaks Livewire's reactivity. -->
+<!-- If Alpine directives don't run, verify Livewire's assets load
+     (they are auto-injected when a Livewire component is on the page). -->
 ```
 
 **Livewire not updating**
 ```bash
-# Clear Livewire cache
-php artisan livewire:discover
+# Clear compiled views
+php artisan view:clear
 
-# Check Livewire scripts are included
-@livewireScripts
+# Livewire 3/4 auto-injects its scripts — @livewireScripts is only
+# needed if auto-injection was disabled in config/livewire.php
 ```
 
 ---
 
 ## Related Documentation
 - [PHASE_1_FOUNDATION.md](./PHASE_1_FOUNDATION.md)
-- [PHASE_2_CORE.md](./PHASE_2_CORE.md)
+- [PHASE_2_GAME_ENGINE.md](./PHASE_2_GAME_ENGINE.md)
 - [PHASE_4_PROGRESSION.md](./PHASE_4_PROGRESSION.md)
 - [PHASE_5_SOLO_MODES.md](./PHASE_5_SOLO_MODES.md)
 
 ---
 
-**Last Updated:** 2024
+**Last Updated:** July 2026
 **Status:** Ready for Implementation

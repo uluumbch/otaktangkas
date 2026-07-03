@@ -1266,9 +1266,9 @@ return [
 
 ```php
 <?php
-// app/Http/Livewire/PracticeMode.php
+// app/Livewire/PracticeMode.php
 
-namespace App\Http\Livewire;
+namespace App\Livewire;
 
 use App\Models\PracticeGame;
 use App\Services\AIService;
@@ -1366,7 +1366,7 @@ class PracticeMode extends Component
 <div class="max-w-2xl mx-auto">
     
     <!-- Puzzle Header -->
-    <div class="bg-gradient-to-r from-secondary-500 to-secondary-600 rounded-xl p-6 text-white mb-6">
+    <div class="bg-linear-to-r from-secondary-500 to-secondary-600 rounded-xl p-6 text-white mb-6">
         <div class="flex items-center justify-between">
             <div>
                 <h2 class="text-2xl font-bold">Puzzle Harian</h2>
@@ -1482,11 +1482,11 @@ class PracticeMode extends Component
 ---
 
 ## Related Documentation
-- [PHASE_2_CORE.md](./PHASE_2_CORE.md)
+- [PHASE_2_GAME_ENGINE.md](./PHASE_2_GAME_ENGINE.md)
 - [PHASE_3_FRONTEND.md](./PHASE_3_FRONTEND.md)
 - [PHASE_4_PROGRESSION.md](./PHASE_4_PROGRESSION.md)
 
 ---
 
-**Last Updated:** 2024
+**Last Updated:** July 2026
 **Status:** Ready for Implementation
