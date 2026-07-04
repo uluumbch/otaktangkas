@@ -14,7 +14,16 @@
             </form>
         </div>
 
-        <div class="mt-8 grid grid-cols-2 gap-4 sm:grid-cols-4">
+        <a href="{{ route('practice') }}" wire:navigate
+           class="mt-8 flex items-center justify-between rounded-2xl bg-linear-to-r from-primary-500 to-secondary-600 p-6 text-white shadow-lg transition hover:from-primary-600 hover:to-secondary-700">
+            <div>
+                <h2 class="text-xl font-bold">Mode Latihan 🎯</h2>
+                <p class="mt-1 text-sm text-primary-50">Main tic-tac-toe kuis melawan AI.</p>
+            </div>
+            <span class="rounded-lg bg-white/20 px-4 py-2 text-sm font-semibold">Main &rarr;</span>
+        </a>
+
+        <div class="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-4">
             <div class="rounded-xl bg-white p-4 shadow-xs">
                 <p class="text-xs uppercase tracking-wide text-gray-500">Level</p>
                 <p class="mt-1 text-2xl font-bold text-primary-600">{{ auth()->user()->level }}</p>
