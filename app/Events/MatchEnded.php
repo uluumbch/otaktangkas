@@ -25,6 +25,11 @@ class MatchEnded implements ShouldBroadcast
         return [new Channel('match.'.$this->match->id)];
     }
 
+    public function broadcastAs(): string
+    {
+        return 'MatchEnded';
+    }
+
     /**
      * @return array<string, mixed>
      */

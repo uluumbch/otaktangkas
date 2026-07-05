@@ -25,6 +25,11 @@ class MatchUpdated implements ShouldBroadcast
         return [new Channel('match.'.$this->match->id)];
     }
 
+    public function broadcastAs(): string
+    {
+        return 'MatchUpdated';
+    }
+
     /**
      * @return array<string, mixed>
      */
