@@ -78,8 +78,15 @@ class Play extends Component
 
         $this->selectedPosition = null;
         unset($this->match);
+        // The AI now takes its turn, but the view triggers aiTurn() after a
+        // short "thinking" pause so the player sees their move land first.
+    }
 
-        // Let the AI take its turn while the match is still going.
+    /**
+     * Play the AI opponent's turn. Called from the view after a brief delay.
+     */
+    public function aiTurn(MatchService $matches): void
+    {
         if ($this->match->status === MatchStatus::InProgress
             && $this->match->current_turn_user_id === $this->match->player2_id) {
             $matches->processAIMove($this->match);

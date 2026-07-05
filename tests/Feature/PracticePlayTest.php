@@ -62,9 +62,27 @@ class PracticePlayTest extends TestCase
             ->assertSet('feedback', 'correct');
 
         $fresh = $match->fresh();
-        // Human 'X' landed at 1,1 and the AI (O) has since responded.
+        // Human 'X' landed; the AI has NOT moved yet (deferred to aiTurn()).
         $this->assertSame('X', $fresh->board_state[1][1]);
+        $this->assertSame($fresh->player2_id, $fresh->current_turn_user_id);
+        $this->assertNotContains('O', collect($fresh->board_state)->flatten()->all());
+    }
+
+    public function test_ai_turn_makes_the_opponent_move(): void
+    {
+        $this->actingAs(User::factory()->create());
+
+        $component = Livewire::test(Play::class);
+        $match = GameMatch::with('currentQuestion.answers')->find($component->get('matchId'));
+        $correct = $match->currentQuestion->correctAnswer;
+
+        $component->call('selectCell', '1,1')->call('answer', $correct->id);
+        // Now the AI's turn is pending; the view would call this after a delay.
+        $component->call('aiTurn');
+
+        $fresh = $match->fresh();
         $this->assertContains('O', collect($fresh->board_state)->flatten()->all());
+        $this->assertSame($fresh->player1_id, $fresh->current_turn_user_id); // back to the player
     }
 
     public function test_a_wrong_answer_keeps_the_selected_cell_for_a_retry(): void
