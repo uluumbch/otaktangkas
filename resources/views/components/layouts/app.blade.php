@@ -14,6 +14,8 @@
                 'dashboard' => 'Dashboard',
                 'practice' => 'Latihan',
                 'quick-play' => 'Quick Play',
+                'leaderboard' => 'Peringkat',
+                'achievements' => 'Prestasi',
             ];
         @endphp
         <nav class="sticky top-0 z-40 border-b border-gray-200 bg-white/90 backdrop-blur">
