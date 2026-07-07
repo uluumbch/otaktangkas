@@ -14,6 +14,7 @@
                 'dashboard' => 'Dashboard',
                 'practice' => 'Latihan',
                 'quick-play' => 'Quick Play',
+                'daily-puzzle' => 'Puzzle',
                 'leaderboard' => 'Peringkat',
                 'achievements' => 'Prestasi',
             ];
