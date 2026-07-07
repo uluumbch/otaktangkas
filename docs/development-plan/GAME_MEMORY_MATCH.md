@@ -23,8 +23,8 @@ if work is interrupted.
 |-------|-------|--------|--------|
 | MM-1 | Game engine + AI | ✅ done | `a337bd0` |
 | MM-2 | Practice mode integration | ✅ done | `67fdb98` |
-| MM-3 | Quick Play integration | ✅ done | see git log |
-| MM-4 | Closeout (docs sweep, full verify) | ⬜ pending | – |
+| MM-3 | Quick Play integration | ✅ done | `ff98f5b` |
+| MM-4 | Closeout (docs sweep, full verify) | ✅ done | see git log |
 
 **Resume rule:** find the first non-✅ phase, run `php artisan test` (and
 `npm run build` from MM-2 on) to confirm a green baseline, then continue from
@@ -139,10 +139,11 @@ Play Memory Match vs the AI from `/practice`.
 ## Phase MM-4: Closeout
 
 ### Checklist
-- [ ] README game list: Memory Match listed as available
-- [ ] INDEX.md: link this document
-- [ ] Status Log above fully ✅ with commit hashes
-- [ ] Full suite + fresh browser sweep, push
+- [x] README game list: Memory Match listed as available
+- [x] INDEX.md: link this document
+- [x] Status Log above fully ✅ with commit hashes (MM-4's own hash in
+      `git log`)
+- [x] Full suite + fresh browser sweep, push
 
 ---
 
@@ -155,4 +156,4 @@ Play Memory Match vs the AI from `/practice`.
 ---
 
 **Last Updated:** July 2026
-**Status:** Ready for Implementation
+**Status:** ✅ Implemented (all phases complete)

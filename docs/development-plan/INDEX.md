@@ -155,6 +155,21 @@ log for resuming interrupted work.
 
 ---
 
+### [GAME_MEMORY_MATCH.md](./GAME_MEMORY_MATCH.md) 🧠 - Memory Match Addition
+**Estimated Time:** 1-2 days
+
+Third playable game type (Ingat Pasangan), pair-pick variant, in Practice
+and Quick Play. Tracked phase-by-phase plan (MM-1 → MM-4).
+
+**Key Topics:**
+- Pair-pick rules: flip two cards per answered question, reveals shared
+- Board state with matched/revealed/scores; early clinch at 5 pairs
+- Reveal-memory AI (remembers flips, not omniscient)
+- Alpine two-tap selection through the shared selectCell
+- Three-game lobby picker
+
+---
+
 ### [PHASE_6_MONETIZATION.md](./PHASE_6_MONETIZATION.md) ⏸️ - Monetization (Deferred — post-MVP)
 **File Size:** 34 KB  
 **Estimated Time:** 3-4 days
