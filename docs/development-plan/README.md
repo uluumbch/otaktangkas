@@ -125,7 +125,9 @@ Players must **answer quiz questions correctly** to make game moves. This unique
 
 ### Games (MVP)
 1. **Tic-Tac-Toe**: 3x3 grid, answer questions to place symbols
-2. **Memory Match**: Coming in Phase 2
+2. **Connect Four (Empat Sejajar)**: 6x7 grid, answer questions to drop
+   discs — see [GAME_CONNECT_FOUR.md](./GAME_CONNECT_FOUR.md)
+3. **Memory Match**: planned (schema slot reserved)
 
 ### Progression System
 - **XP and Levels**: 1-50 levels

@@ -139,6 +139,22 @@ Single-player modes including AI opponent and daily puzzles.
 
 ---
 
+### [GAME_CONNECT_FOUR.md](./GAME_CONNECT_FOUR.md) 🔴 - Connect Four Addition
+**Estimated Time:** 2-3 days
+
+Second playable game type (Empat Sejajar) in Practice and Quick Play,
+implemented as a tracked phase-by-phase plan (CF-1 → CF-5) with a status
+log for resuming interrupted work.
+
+**Key Topics:**
+- ConnectFourGame behind the shared GameInterface
+- Column-drop move format and engine-side move validation
+- AI difficulty policies (win / block / no-gift / center-out)
+- Game-type-aware quick play matchmaking
+- Per-game board Blade partials
+
+---
+
 ### [PHASE_6_MONETIZATION.md](./PHASE_6_MONETIZATION.md) ⏸️ - Monetization (Deferred — post-MVP)
 **File Size:** 34 KB  
 **Estimated Time:** 3-4 days

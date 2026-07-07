@@ -14,8 +14,8 @@ the Status Log below shows exactly where to resume.
 | CF-1 | Game engine + migration | ✅ done | `987818d` |
 | CF-2 | AI opponent | ✅ done | `34c59a6` |
 | CF-3 | Practice mode integration | ✅ done | `616c44c` |
-| CF-4 | Quick Play integration | ✅ done | see git log |
-| CF-5 | Closeout (docs sweep, full verify) | ⬜ pending | – |
+| CF-4 | Quick Play integration | ✅ done | `6e8cbf5` |
+| CF-5 | Closeout (docs sweep, full verify) | ✅ done | see git log |
 
 **Resume rule:** find the first non-✅ phase, re-run `php artisan test` to
 confirm the baseline is green, then continue from that phase's checklist.
@@ -133,11 +133,13 @@ Real-time multiplayer Connect Four with game-aware matchmaking.
 ## Phase CF-5: Closeout
 
 ### Checklist
-- [ ] README game list: Connect Four listed as available (Memory Match stays
+- [x] README game list: Connect Four listed as available (Memory Match stays
       "planned")
-- [ ] INDEX.md: link this document
-- [ ] Status Log above fully ✅ with commit hashes
-- [ ] Full suite + fresh browser sweep, push
+- [x] INDEX.md: link this document
+- [x] Status Log above fully ✅ with commit hashes (each phase's hash is
+      recorded in the following phase's commit; CF-5's own hash is in
+      `git log`)
+- [x] Full suite + fresh browser sweep, push
 
 ---
 
@@ -149,4 +151,4 @@ Real-time multiplayer Connect Four with game-aware matchmaking.
 ---
 
 **Last Updated:** July 2026
-**Status:** Ready for Implementation
+**Status:** ✅ Implemented (all phases complete)
