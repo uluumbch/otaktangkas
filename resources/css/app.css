@@ -30,4 +30,116 @@
     --color-secondary-700: #a21caf;
     --color-secondary-800: #86198f;
     --color-secondary-900: #701a75;
+
+    /* Soft colored card shadow used across game surfaces */
+    --shadow-game: 0 4px 14px -2px color-mix(in oklab, var(--color-primary-500) 18%, transparent),
+        0 2px 4px -2px rgb(0 0 0 / 0.06);
+
+    /* Game motion */
+    --animate-pop-in: pop-in 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+    --animate-disc-drop: disc-drop 0.45s cubic-bezier(0.55, 0, 1, 0.45) both;
+    --animate-shake: shake 0.4s ease-in-out both;
+    --animate-pulse-glow: pulse-glow 1.6s ease-in-out infinite;
+    --animate-float: float 3s ease-in-out infinite;
+    --animate-confetti: confetti-fall 2.2s ease-in forwards;
+
+    @keyframes pop-in {
+        from {
+            transform: scale(0.2);
+            opacity: 0;
+        }
+        to {
+            transform: scale(1);
+            opacity: 1;
+        }
+    }
+
+    @keyframes disc-drop {
+        0% {
+            transform: translateY(-480%);
+        }
+        70% {
+            transform: translateY(0);
+        }
+        84% {
+            transform: translateY(-9%);
+        }
+        100% {
+            transform: translateY(0);
+        }
+    }
+
+    @keyframes shake {
+        0%,
+        100% {
+            transform: translateX(0);
+        }
+        20% {
+            transform: translateX(-8px);
+        }
+        40% {
+            transform: translateX(8px);
+        }
+        60% {
+            transform: translateX(-5px);
+        }
+        80% {
+            transform: translateX(5px);
+        }
+    }
+
+    @keyframes pulse-glow {
+        0%,
+        100% {
+            box-shadow: 0 0 0 0 color-mix(in oklab, currentColor 45%, transparent);
+        }
+        50% {
+            box-shadow: 0 0 0 6px transparent;
+        }
+    }
+
+    @keyframes float {
+        0%,
+        100% {
+            transform: translateY(0);
+        }
+        50% {
+            transform: translateY(-7px);
+        }
+    }
+
+    @keyframes confetti-fall {
+        0% {
+            transform: translateY(-12px) rotate(0deg);
+            opacity: 1;
+        }
+        100% {
+            transform: translateY(110px) rotate(540deg);
+            opacity: 0;
+        }
+    }
+}
+
+@layer components {
+    /* Chunky arcade button: solid bottom edge that "presses" on click. */
+    .btn-game {
+        @apply inline-flex cursor-pointer items-center justify-center gap-2 rounded-xl border-b-4 border-primary-800 bg-primary-600 px-5 py-2.5 font-bold text-white transition duration-100 hover:bg-primary-500 active:translate-y-0.5 active:border-b-2 disabled:cursor-not-allowed disabled:opacity-60;
+    }
+
+    .btn-game-light {
+        @apply inline-flex cursor-pointer items-center justify-center gap-2 rounded-xl border border-b-4 border-gray-200 border-b-gray-300 bg-white px-4 py-2 font-bold text-gray-700 transition duration-100 hover:bg-gray-50 active:translate-y-0.5 active:border-b disabled:cursor-not-allowed disabled:opacity-60;
+    }
+
+    /* HUD chip for nav stats and score readouts. */
+    .chip-hud {
+        @apply inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-sm font-bold shadow-xs ring-1 ring-black/5;
+    }
+
+    /* Colorful playfield backdrop behind every authenticated screen. */
+    .bg-playfield {
+        background:
+            radial-gradient(55rem 28rem at 115% -8%, color-mix(in oklab, var(--color-secondary-200) 45%, transparent), transparent),
+            radial-gradient(45rem 24rem at -15% 108%, color-mix(in oklab, var(--color-primary-200) 45%, transparent), transparent),
+            linear-gradient(to bottom right, var(--color-primary-50), white 45%, var(--color-secondary-50));
+    }
 }

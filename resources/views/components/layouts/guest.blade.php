@@ -7,7 +7,7 @@
     <title>{{ $title ?? config('app.name', 'OtakTangkas') }}</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="h-full bg-linear-to-br from-primary-50 via-gray-50 to-secondary-50 text-gray-900 antialiased">
+<body class="bg-playfield h-full text-gray-900 antialiased">
     <main class="min-h-full">
         {{ $slot }}
     </main>

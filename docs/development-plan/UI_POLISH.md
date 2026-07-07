@@ -15,7 +15,7 @@ if work is interrupted.
 
 | Phase | Scope | Status | Commit |
 |-------|-------|--------|--------|
-| UI-1 | Game design system (theme, animations, layout/nav) | ⬜ pending | – |
+| UI-1 | Game design system (theme, animations, layout/nav) | ✅ done | see git log |
 | UI-2 | Board & gameplay feel (tiles, discs, motion, feedback) | ⬜ pending | – |
 | UI-3 | Match stage (VS header, celebrations, AI bubble) | ⬜ pending | – |
 | UI-4 | Lobby, dashboard & puzzle alignment | ⬜ pending | – |
@@ -62,16 +62,16 @@ commit.
 Foundation everything else uses.
 
 ### Checklist
-- [ ] `resources/css/app.css`: add keyframes (`pop-in`, `disc-drop`,
+- [x] `resources/css/app.css`: add keyframes (`pop-in`, `disc-drop`,
       `shake`, `pulse-glow`, `float`, `confetti-fall`) + `--animate-*`
       theme tokens; game shadow tokens
-- [ ] Component classes: `.btn-game` (chunky pressed button, primary and
+- [x] Component classes: `.btn-game` (chunky pressed button, primary and
       white variants), `.chip-hud` (nav/stat chips)
-- [ ] App layout: gradient playfield backdrop (soft primary→secondary wash),
+- [x] App layout: gradient playfield backdrop (soft primary→secondary wash),
       nav polish — gradient logo text, HUD-style level/coin chips, bolder
       active link pill
-- [ ] Guest layout aligned with the same system
-- [ ] `npm run build` + full suite green → commit `UI-1: game design system`
+- [x] Guest layout aligned with the same system
+- [x] `npm run build` + full suite green → commit `UI-1: game design system`
 
 ## Phase UI-2: Board & Gameplay Feel
 
