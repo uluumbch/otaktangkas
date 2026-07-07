@@ -92,6 +92,25 @@ class QuickPlayTest extends TestCase
         $this->assertSame('', $match->fresh()->board_state[0][0]);
     }
 
+    public function test_timeout_forfeits_to_the_opponent(): void
+    {
+        $host = User::factory()->create();
+        $svc = app(MatchService::class);
+        $match = $svc->createMatch($host, 'quick_play');
+        $guest = User::factory()->create();
+        $svc->joinMatch($match, $guest);
+        // Host (player1) is on the clock and times out.
+
+        $this->actingAs($host);
+        Livewire::test(Play::class, ['match' => $match->fresh()])->call('timeout');
+
+        $fresh = $match->fresh();
+        $this->assertSame(MatchStatus::Abandoned, $fresh->status);
+        $this->assertSame($guest->id, $fresh->winner_id);
+        $this->assertSame(1, $guest->fresh()->wins);
+        $this->assertSame(1, $host->fresh()->losses);
+    }
+
     public function test_a_player_can_move_on_their_turn(): void
     {
         $host = User::factory()->create();

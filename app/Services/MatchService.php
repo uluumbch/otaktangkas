@@ -313,16 +313,20 @@ class MatchService
 
         $opponent = $match->opponentFor($player);
 
-        if ($opponent && ! $opponent->is_guest) {
+        if ($opponent) {
+            // The opponent always wins a forfeit (even the AI in practice),
+            // but only human opponents receive rewards.
             $match->winner_id = $opponent->id;
             $match->result = $player->id === $match->player1_id ? 'player2_win' : 'player1_win';
             $match->save();
 
-            $opponent->addXp(30);
-            $opponent->addCoins(15, 'Lawan meninggalkan pertandingan', $match);
-            $opponent->increment('wins');
-            $opponent->increment('total_matches');
-            $opponent->save();
+            if (! $opponent->is_guest) {
+                $opponent->addXp(30);
+                $opponent->addCoins(15, 'Lawan meninggalkan pertandingan', $match);
+                $opponent->increment('wins');
+                $opponent->increment('total_matches');
+                $opponent->save();
+            }
         }
 
         if (! $player->is_guest) {

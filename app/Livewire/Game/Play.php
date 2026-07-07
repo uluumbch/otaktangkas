@@ -75,6 +75,18 @@ class Play extends Component
         }
     }
 
+    /**
+     * The player ran out of time on their turn: they forfeit the match.
+     */
+    public function timeout(MatchService $matches): void
+    {
+        if ($this->isMyTurn()) {
+            $matches->abandonMatch($this->match, auth()->user());
+            $this->feedback = null;
+            unset($this->match);
+        }
+    }
+
     public function answer(int $answerId, MatchService $matches): void
     {
         if (! $this->isMyTurn()) {

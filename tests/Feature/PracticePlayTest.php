@@ -104,6 +104,19 @@ class PracticePlayTest extends TestCase
         $this->assertSame('X', $match->fresh()->board_state[0][0]);
     }
 
+    public function test_timeout_forfeits_the_match_to_the_ai(): void
+    {
+        $this->actingAs($user = User::factory()->create());
+
+        $component = Livewire::test(Play::class);
+        $component->call('timeout');
+
+        $match = GameMatch::find($component->get('matchId'));
+        $this->assertSame(MatchStatus::Abandoned, $match->status);
+        $this->assertSame('player2_win', $match->result); // AI (player2) wins
+        $this->assertSame(1, $user->fresh()->losses);
+    }
+
     public function test_new_game_starts_a_fresh_match(): void
     {
         $this->actingAs(User::factory()->create());

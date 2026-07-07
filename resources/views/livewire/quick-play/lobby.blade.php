@@ -1,11 +1,5 @@
-<div class="mx-auto max-w-lg px-4 py-12">
-    <div class="flex items-center justify-between">
-        <a href="{{ route('dashboard') }}" wire:navigate class="text-sm font-medium text-primary-600 hover:text-primary-500">&larr; Dashboard</a>
-        <h1 class="text-lg font-bold text-gray-900">Quick Play</h1>
-        <span class="w-16"></span>
-    </div>
-
-    <div class="mt-8 rounded-2xl bg-white p-8 text-center shadow-xs">
+<div class="mx-auto max-w-lg px-4 py-10">
+    <div class="rounded-2xl bg-white p-8 text-center shadow-xs">
         <div class="mx-auto flex size-16 items-center justify-center rounded-2xl bg-linear-to-br from-primary-500 to-secondary-600 text-3xl">
             ⚔️
         </div>

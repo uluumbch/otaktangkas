@@ -4,12 +4,15 @@
     $status = $match->status->value;
     $myTurn = $this->isMyTurn();
     $question = $match->currentQuestion;
+    $over = in_array($status, ['completed', 'abandoned'], true);
+    $remaining = ($status === 'in_progress' && $match->turn_started_at)
+        ? max(0, $match->turn_time_limit - (int) $match->turn_started_at->diffInSeconds(now()))
+        : $match->turn_time_limit;
 @endphp
 
 <div class="mx-auto max-w-2xl px-4 py-8">
     {{-- Header --}}
     <div class="flex items-center justify-between">
-        <a href="{{ route('dashboard') }}" wire:navigate class="text-sm font-medium text-primary-600 hover:text-primary-500">&larr; Dashboard</a>
         <h1 class="text-lg font-bold text-gray-900">Mode Latihan</h1>
         <button wire:click="newGame" class="rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50">
             Game Baru
@@ -27,8 +30,21 @@
         </span>
     </div>
 
+    {{-- Turn timer (player's turn only) --}}
+    @if ($status === 'in_progress' && $myTurn)
+        <div class="mt-3 flex justify-center"
+             wire:key="timer-{{ $match->id }}-{{ $match->current_question_id }}"
+             x-data="{ left: {{ $remaining }} }"
+             x-init="$nextTick(() => { const t = setInterval(() => { if (--left <= 0) { clearInterval(t); $wire.timeout(); } }, 1000); })">
+            <span class="rounded-full px-3 py-1 text-sm font-semibold"
+                  :class="left <= 5 ? 'bg-red-100 text-red-700' : 'bg-gray-100 text-gray-600'">
+                ⏱ <span x-text="left"></span> dtk
+            </span>
+        </div>
+    @endif
+
     {{-- Result banner --}}
-    @if ($status === 'completed')
+    @if ($over)
         @php
             $banner = match ($match->result) {
                 'player1_win' => ['Kamu Menang! 🎉', 'bg-green-50 text-green-800 ring-green-200'],
@@ -37,6 +53,7 @@
             };
         @endphp
         <div class="mt-6 rounded-xl px-4 py-4 text-center text-lg font-bold ring-1 {{ $banner[1] }}">
+            @if ($status === 'abandoned')<p class="text-sm font-medium text-red-600">⏱ Waktu habis!</p>@endif
             {{ $banner[0] }}
             <div class="mt-3">
                 <button wire:click="newGame" class="rounded-lg bg-primary-600 px-5 py-2 text-sm font-semibold text-white hover:bg-primary-700">
