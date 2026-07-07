@@ -8,7 +8,7 @@ use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
 use Livewire\Component;
 
-#[Layout('components.layouts.app')]
+#[Layout('components.layouts.guest')]
 #[Title('Masuk - OtakTangkas')]
 class Login extends Component
 {
