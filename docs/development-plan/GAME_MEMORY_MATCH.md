@@ -21,8 +21,8 @@ if work is interrupted.
 
 | Phase | Scope | Status | Commit |
 |-------|-------|--------|--------|
-| MM-1 | Game engine + AI | ✅ done | see git log |
-| MM-2 | Practice mode integration | ⬜ pending | – |
+| MM-1 | Game engine + AI | ✅ done | `a337bd0` |
+| MM-2 | Practice mode integration | ✅ done | see git log |
 | MM-3 | Quick Play integration | ⬜ pending | – |
 | MM-4 | Closeout (docs sweep, full verify) | ⬜ pending | – |
 
@@ -109,17 +109,18 @@ phase's commit.
 Play Memory Match vs the AI from `/practice`.
 
 ### Checklist
-- [ ] `Practice\Play::GAME_TYPES` gains `memory_match`; picker gains
+- [x] `Practice\Play::GAME_TYPES` gains `memory_match`; picker gains
       🧠 Memory (component logic otherwise untouched)
-- [ ] Board partial `board-memory-match`: 4×4 card grid, Alpine two-tap
+- [x] Board partial `board-memory-match`: 4×4 card grid, Alpine two-tap
       selection, card backs / claimed / just-revealed states, pop-in
-      reveals, score chips
-- [ ] Unit copy: "dua kartu" variant in practice + match views
-- [ ] Component tests: picker deals a memory match, a correct answer with a
+      reveals, score chips (note: just-revealed cards stay clickable —
+      they're legal picks for the next flip)
+- [x] Unit copy: "dua kartu" variant in practice + match views
+- [x] Component tests: picker deals a memory match, a correct answer with a
       matching pair claims it and scores, a miss reveals without claiming,
       wrong answer keeps the selection for retry
-- [ ] Browser verify (Playwright screenshots of a live memory practice game)
-- [ ] `npm run build` + full suite green → commit `MM-2: Memory Match
+- [x] Browser verify (Playwright screenshots of a live memory practice game)
+- [x] `npm run build` + full suite green → commit `MM-2: Memory Match
       practice mode`
 
 ## Phase MM-3: Quick Play Integration

@@ -1,7 +1,11 @@
 @php
     $match = $this->match;
     $board = $match->board_state ?? [];
-    $unit = $match->game_type === 'connect_four' ? 'kolom' : 'kotak';
+    $unit = match ($match->game_type) {
+        'connect_four' => 'kolom',
+        'memory_match' => 'dua kartu',
+        default => 'kotak',
+    };
     $status = $match->status->value;
     $myTurn = $this->isMyTurn();
     $question = $match->currentQuestion;
@@ -22,7 +26,7 @@
 
     {{-- Game type picker --}}
     <div class="mt-4 flex justify-center gap-2 text-sm" role="group" aria-label="Pilih permainan">
-        @foreach (['tic_tac_toe' => '⭕ Tic-Tac-Toe', 'connect_four' => '🔴 Empat Sejajar'] as $type => $label)
+        @foreach (['tic_tac_toe' => '⭕ Tic-Tac-Toe', 'connect_four' => '🔴 Empat Sejajar', 'memory_match' => '🧠 Memory'] as $type => $label)
             <button
                 wire:click="setGameType('{{ $type }}')"
                 class="cursor-pointer rounded-full px-4 py-1.5 font-bold transition

@@ -1,7 +1,11 @@
 @php
     $match = $this->match;
     $board = $match->board_state ?? [];
-    $unit = $match->game_type === 'connect_four' ? 'kolom' : 'kotak';
+    $unit = match ($match->game_type) {
+        'connect_four' => 'kolom',
+        'memory_match' => 'dua kartu',
+        default => 'kotak',
+    };
     $status = $match->status->value;
     $myTurn = $this->isMyTurn();
     $mySymbol = $this->mySymbol();

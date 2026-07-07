@@ -15,7 +15,7 @@ use Livewire\Component;
 #[Title('Latihan - OtakTangkas')]
 class Play extends Component
 {
-    public const GAME_TYPES = ['tic_tac_toe', 'connect_four'];
+    public const GAME_TYPES = ['tic_tac_toe', 'connect_four', 'memory_match'];
 
     public int $matchId;
 

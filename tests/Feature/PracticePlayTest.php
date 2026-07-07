@@ -178,6 +178,82 @@ class PracticePlayTest extends TestCase
         $this->assertNotContains('X', collect($match->fresh()->board_state)->flatten()->all());
     }
 
+    public function test_picker_switches_to_memory_match_and_deals_16_cards(): void
+    {
+        $this->actingAs(User::factory()->create());
+
+        $component = Livewire::test(Play::class)->call('setGameType', 'memory_match');
+
+        $match = GameMatch::find($component->get('matchId'));
+        $this->assertSame('memory_match', $match->game_type);
+        $this->assertCount(16, $match->board_state['cards']);
+    }
+
+    public function test_memory_match_correct_answer_claims_a_matching_pair(): void
+    {
+        $this->actingAs(User::factory()->create());
+
+        $component = Livewire::test(Play::class)->call('setGameType', 'memory_match');
+        $match = GameMatch::with('currentQuestion.answers')->find($component->get('matchId'));
+        $correct = $match->currentQuestion->correctAnswer;
+
+        // Find a real pair in the shuffled layout.
+        $byValue = [];
+        foreach ($match->board_state['cards'] as $i => $value) {
+            $byValue[$value][] = $i;
+        }
+        [$a, $b] = array_values($byValue)[0];
+
+        $component->call('selectCell', "{$a}|{$b}")
+            ->assertSet('selectedPosition', "{$a}|{$b}")
+            ->call('answer', $correct->id)
+            ->assertSet('feedback', 'correct');
+
+        $fresh = $match->fresh();
+        $this->assertSame('X', $fresh->board_state['matched'][$a]);
+        $this->assertSame(1, $fresh->board_state['scores']['X']);
+        $this->assertTrue($fresh->board_state['last_flip']['matched']);
+    }
+
+    public function test_memory_match_miss_reveals_without_claiming(): void
+    {
+        $this->actingAs(User::factory()->create());
+
+        $component = Livewire::test(Play::class)->call('setGameType', 'memory_match');
+        $match = GameMatch::with('currentQuestion.answers')->find($component->get('matchId'));
+        $correct = $match->currentQuestion->correctAnswer;
+
+        // Two cards with different values.
+        $cards = $match->board_state['cards'];
+        $a = 0;
+        $b = collect($cards)->search(fn ($value, $i) => $i > 0 && $value !== $cards[0]);
+
+        $component->call('selectCell', "{$a}|{$b}")
+            ->call('answer', $correct->id)
+            ->assertSet('feedback', 'correct'); // quiz answer right, flip just missed
+
+        $fresh = $match->fresh();
+        $this->assertSame([], $fresh->board_state['matched']);
+        $this->assertFalse($fresh->board_state['last_flip']['matched']);
+        $this->assertEqualsCanonicalizing([$a, $b], $fresh->board_state['revealed']);
+    }
+
+    public function test_memory_match_wrong_answer_keeps_the_selected_pair(): void
+    {
+        $this->actingAs(User::factory()->create());
+
+        $component = Livewire::test(Play::class)->call('setGameType', 'memory_match');
+        $match = GameMatch::with('currentQuestion.answers')->find($component->get('matchId'));
+        $wrong = $match->currentQuestion->answers->firstWhere('is_correct', false);
+
+        $component->call('selectCell', '0|1')
+            ->call('answer', $wrong->id)
+            ->assertSet('feedback', 'wrong')
+            ->assertSet('selectedPosition', '0|1'); // pair retained for retry
+
+        $this->assertSame([], $match->fresh()->board_state['revealed']);
+    }
+
     public function test_timeout_forfeits_the_match_to_the_ai(): void
     {
         $this->actingAs($user = User::factory()->create());
