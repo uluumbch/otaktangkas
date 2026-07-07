@@ -122,6 +122,83 @@ class QuickPlayTest extends TestCase
         $this->assertSame($host->id, $fresh->current_turn_user_id);
     }
 
+    public function test_memory_match_seekers_are_paired_together_but_not_across_games(): void
+    {
+        $svc = app(MatchService::class);
+        $tttHost = User::factory()->create(['level' => 3]);
+        $tttWaiting = $svc->createMatch($tttHost, 'quick_play'); // tic_tac_toe
+
+        $this->actingAs(User::factory()->create(['level' => 3]));
+
+        Livewire::test(Lobby::class)
+            ->call('setGameType', 'memory_match')
+            ->call('findMatch');
+
+        // The tic-tac-toe match was not joined; a memory match was opened.
+        $this->assertSame(MatchStatus::Waiting, $tttWaiting->fresh()->status);
+        $created = GameMatch::where('game_type', 'memory_match')->first();
+        $this->assertNotNull($created);
+
+        // A second memory seeker joins it.
+        $this->actingAs(User::factory()->create(['level' => 3]));
+        Livewire::test(Lobby::class)
+            ->call('setGameType', 'memory_match')
+            ->call('findMatch');
+
+        $this->assertSame(MatchStatus::InProgress, $created->fresh()->status);
+    }
+
+    public function test_memory_match_multiplayer_round_trip(): void
+    {
+        $host = User::factory()->create();
+        $svc = app(MatchService::class);
+        $match = $svc->createMatch($host, 'quick_play', ['game_type' => 'memory_match']);
+        $guest = User::factory()->create();
+        $svc->joinMatch($match, $guest);
+
+        // Host flips a real pair (found server-side).
+        $byValue = [];
+        foreach ($match->fresh()->board_state['cards'] as $i => $value) {
+            $byValue[$value][] = $i;
+        }
+        [$a, $b] = array_values($byValue)[0];
+
+        $this->actingAs($host);
+        $correct = $match->fresh()->currentQuestion->correctAnswer;
+
+        Livewire::test(Play::class, ['match' => $match->fresh()])
+            ->call('selectCell', "{$a}|{$b}")
+            ->assertSet('selectedPosition', "{$a}|{$b}")
+            ->call('answer', $correct->id)
+            ->assertSet('feedback', 'correct');
+
+        $fresh = $match->fresh();
+        $this->assertSame(1, $fresh->board_state['scores']['X']);
+        $this->assertSame($guest->id, $fresh->current_turn_user_id);
+
+        // Guest flips a miss: two cards with different values, both open.
+        $cards = $fresh->board_state['cards'];
+        $open = array_values(array_filter(
+            array_keys($cards),
+            fn ($i) => ! isset($fresh->board_state['matched'][$i]),
+        ));
+        $c = $open[0];
+        $d = collect($open)->first(fn ($i) => $cards[$i] !== $cards[$c]);
+
+        $this->actingAs($guest);
+        $correct = $fresh->currentQuestion->correctAnswer;
+
+        Livewire::test(Play::class, ['match' => $fresh])
+            ->call('selectCell', min($c, $d).'|'.max($c, $d))
+            ->call('answer', $correct->id)
+            ->assertSet('feedback', 'correct');
+
+        $final = $match->fresh();
+        $this->assertSame(0, $final->board_state['scores']['O']);
+        $this->assertFalse($final->board_state['last_flip']['matched']);
+        $this->assertSame($host->id, $final->current_turn_user_id); // back to host
+    }
+
     public function test_a_non_participant_cannot_view_a_match(): void
     {
         $host = User::factory()->create();

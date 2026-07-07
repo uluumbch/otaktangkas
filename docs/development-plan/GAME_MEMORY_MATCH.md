@@ -22,8 +22,8 @@ if work is interrupted.
 | Phase | Scope | Status | Commit |
 |-------|-------|--------|--------|
 | MM-1 | Game engine + AI | ✅ done | `a337bd0` |
-| MM-2 | Practice mode integration | ✅ done | see git log |
-| MM-3 | Quick Play integration | ⬜ pending | – |
+| MM-2 | Practice mode integration | ✅ done | `67fdb98` |
+| MM-3 | Quick Play integration | ✅ done | see git log |
 | MM-4 | Closeout (docs sweep, full verify) | ⬜ pending | – |
 
 **Resume rule:** find the first non-✅ phase, run `php artisan test` (and
@@ -126,14 +126,14 @@ Play Memory Match vs the AI from `/practice`.
 ## Phase MM-3: Quick Play Integration
 
 ### Checklist
-- [ ] Lobby picker gains a Memory preview card (three-game grid)
-- [ ] Matchmaking needs no code change (game_type filter already generic) —
+- [x] Lobby picker gains a Memory preview card (three-game grid)
+- [x] Matchmaking needs no code change (game_type filter already generic) —
       regression test proves memory seekers pair together and don't join
       other games' waiting matches
-- [ ] Multiplayer round-trip test on a memory board (host flips, guest
-      flips, scores tracked, turn passes)
-- [ ] Two-browser Playwright verify (both players see the same reveal)
-- [ ] `npm run build` + full suite green → commit `MM-3: Memory Match quick
+- [x] Multiplayer round-trip test on a memory board (host flips a pair and
+      scores, guest flips a miss, turn passes back)
+- [x] Two-browser Playwright verify (both players see the same reveal)
+- [x] `npm run build` + full suite green → commit `MM-3: Memory Match quick
       play`
 
 ## Phase MM-4: Closeout

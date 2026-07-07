@@ -10,7 +10,7 @@
         </p>
 
         {{-- Game type picker: mini board previews --}}
-        <div class="mt-6 grid grid-cols-2 gap-3" role="group" aria-label="Pilih permainan">
+        <div class="mt-6 grid grid-cols-3 gap-3" role="group" aria-label="Pilih permainan">
             {{-- Tic-Tac-Toe --}}
             <button
                 wire:click="setGameType('tic_tac_toe')"
@@ -37,6 +37,20 @@
                     @endforeach
                 </div>
                 <p class="mt-2 text-sm font-black {{ $gameType === 'connect_four' ? 'text-primary-700' : 'text-gray-600' }}">🔴 Empat Sejajar</p>
+            </button>
+
+            {{-- Memory Match --}}
+            <button
+                wire:click="setGameType('memory_match')"
+                class="cursor-pointer rounded-2xl p-4 transition hover:-translate-y-0.5
+                    {{ $gameType === 'memory_match' ? 'shadow-game bg-primary-50 ring-4 ring-primary-400' : 'bg-gray-50 ring-1 ring-gray-200 hover:ring-primary-200' }}">
+                <div class="mx-auto grid w-16 grid-cols-4 gap-0.5">
+                    @foreach (['', '🍎', '', '', '', '', '🍎', '', '', '', '', ''] as $cell)
+                        <span class="flex aspect-square items-center justify-center rounded-xs text-[8px]
+                            {{ $cell === '' ? 'bg-linear-to-br from-primary-400 to-secondary-500' : 'bg-white shadow-xs' }}">{{ $cell }}</span>
+                    @endforeach
+                </div>
+                <p class="mt-2 text-sm font-black {{ $gameType === 'memory_match' ? 'text-primary-700' : 'text-gray-600' }}">🧠 Memory</p>
             </button>
         </div>
 
