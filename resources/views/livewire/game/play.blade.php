@@ -43,8 +43,8 @@
                  wire:key="timer-{{ $match->id }}-{{ $match->current_question_id }}"
                  x-data="{ left: {{ $remaining }} }"
                  x-init="$nextTick(() => { const t = setInterval(() => { if (--left <= 0) { clearInterval(t); $wire.timeout(); } }, 1000); })">
-                <span class="rounded-full px-3 py-1 text-sm font-semibold"
-                      :class="left <= 5 ? 'bg-red-100 text-red-700' : 'bg-gray-100 text-gray-600'">
+                <span class="rounded-full px-3 py-1 text-sm font-bold shadow-xs ring-1 ring-black/5"
+                      :class="left <= 5 ? 'bg-red-100 text-red-700 animate-pulse' : 'bg-white text-gray-600'">
                     ⏱ <span x-text="left"></span> dtk
                 </span>
             </div>
@@ -79,15 +79,17 @@
 
         {{-- Question --}}
         @if ($status === 'in_progress' && $question)
-            <div class="mt-6 rounded-2xl bg-white p-6 shadow-xs">
+            @php $shakeKey = $match->moves()->count(); @endphp
+            <div class="shadow-game mt-6 rounded-2xl bg-white p-6 {{ $feedback === 'wrong' ? 'animate-shake' : '' }}"
+                 wire:key="qcard-{{ $match->id }}-{{ $shakeKey }}">
                 <div class="flex items-center justify-between">
-                    <span class="rounded-full bg-primary-100 px-3 py-1 text-xs font-medium text-primary-800">
+                    <span class="rounded-full bg-primary-100 px-3 py-1 text-xs font-bold text-primary-800">
                         {{ $question->category->name ?? 'Pertanyaan' }}
                     </span>
                     @if ($feedback === 'correct')
-                        <span class="text-sm font-semibold text-green-600">Benar! ✓</span>
+                        <span class="animate-pop-in text-sm font-black text-green-600">Benar! ✓</span>
                     @elseif ($feedback === 'wrong')
-                        <span class="text-sm font-semibold text-red-600">Salah, coba lagi ✗</span>
+                        <span class="text-sm font-black text-red-600">Salah, coba lagi ✗</span>
                     @endif
                 </div>
 
@@ -101,7 +103,7 @@
                         <button
                             wire:click="answer({{ $answer->id }})"
                             @disabled(! $myTurn)
-                            class="rounded-lg border-2 border-gray-200 px-4 py-3 text-left text-gray-800 transition hover:border-primary-400 hover:bg-primary-50 disabled:cursor-not-allowed disabled:opacity-50">
+                            class="rounded-xl border-2 border-b-4 border-gray-200 px-4 py-3 text-left font-semibold text-gray-800 transition hover:-translate-y-0.5 hover:border-primary-400 hover:bg-primary-50 active:translate-y-0 disabled:cursor-not-allowed disabled:opacity-50">
                             {{ $answer->answer }}
                         </button>
                     @endforeach

@@ -15,8 +15,8 @@ if work is interrupted.
 
 | Phase | Scope | Status | Commit |
 |-------|-------|--------|--------|
-| UI-1 | Game design system (theme, animations, layout/nav) | ✅ done | see git log |
-| UI-2 | Board & gameplay feel (tiles, discs, motion, feedback) | ⬜ pending | – |
+| UI-1 | Game design system (theme, animations, layout/nav) | ✅ done | `62a063c` |
+| UI-2 | Board & gameplay feel (tiles, discs, motion, feedback) | ✅ done | see git log |
 | UI-3 | Match stage (VS header, celebrations, AI bubble) | ⬜ pending | – |
 | UI-4 | Lobby, dashboard & puzzle alignment | ⬜ pending | – |
 | UI-5 | Verification sweep + closeout | ⬜ pending | – |
@@ -78,17 +78,19 @@ Foundation everything else uses.
 The core "this is a game" moment.
 
 ### Checklist
-- [ ] Tic-Tac-Toe partial: chunky tiles with soft inner depth, hover lift on
+- [x] Tic-Tac-Toe partial: chunky tiles with soft inner depth, hover lift on
       playable cells, selected-cell glow ring, `pop-in` on newly placed
       symbols (value-keyed marks)
-- [ ] Connect Four partial: classic blue game frame (gradient
-      primary-700→800, rounded, inner shadow), holes with inset depth, discs
+- [x] Connect Four partial: classic blue game frame (gradient
+      primary-600→800, rounded, inner shadow), holes with inset depth, discs
       with radial highlight, `disc-drop` animation on newly landed discs,
       column hover/selected glow
-- [ ] Turn timer: pill pulses and goes red under 5 s (15 s for puzzle)
-- [ ] Question card: `shake` on wrong answer, green flash copy on correct,
+- [x] Turn timer: pill pulses and goes red under 5 s (puzzle's 15 s pill in
+      UI-4)
+- [x] Question card: `shake` on wrong answer (keyed by move count so
+      consecutive wrong answers replay it), pop-in "Benar!" on correct,
       chunky answer buttons with hover lift
-- [ ] `npm run build` + full suite green → commit `UI-2: board & gameplay feel`
+- [x] `npm run build` + full suite green → commit `UI-2: board & gameplay feel`
 
 ## Phase UI-3: Match Stage
 
