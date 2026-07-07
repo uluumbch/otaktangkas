@@ -12,8 +12,8 @@ the Status Log below shows exactly where to resume.
 | Phase | Scope | Status | Commit |
 |-------|-------|--------|--------|
 | CF-1 | Game engine + migration | ✅ done | `987818d` |
-| CF-2 | AI opponent | ✅ done | see git log |
-| CF-3 | Practice mode integration | ⬜ pending | – |
+| CF-2 | AI opponent | ✅ done | `34c59a6` |
+| CF-3 | Practice mode integration | ✅ done | see git log |
 | CF-4 | Quick Play integration | ⬜ pending | – |
 | CF-5 | Closeout (docs sweep, full verify) | ⬜ pending | – |
 
@@ -99,19 +99,20 @@ New `ConnectFourGame` behind the existing `GameInterface`, registered in
 Play Connect Four vs the AI from `/practice`.
 
 ### Checklist
-- [ ] `Practice\Play`: `gameType` property + picker UI (Tic-Tac-Toe ▸ Connect
+- [x] `Practice\Play`: `gameType` property + picker UI (Tic-Tac-Toe ▸ Connect
       Four); new game starts a match of the chosen type
-- [ ] Shared refactor: `selectCell()` validates via the engine's
+- [x] Shared refactor: `selectCell()` validates via the engine's
       `getValidMoves()` instead of parsing `"row,col"` (keeps Tic-Tac-Toe
-      behaviour identical — covered by the existing tests)
-- [ ] Board partials extracted: `board-tic-tac-toe` (existing markup moved),
+      behaviour identical — covered by the existing tests; applied to both
+      `Practice\Play` and `Game\Play`)
+- [x] Board partials extracted: `board-tic-tac-toe` (existing markup moved),
       `board-connect-four` (7 clickable columns, 6×7 disc grid)
-- [ ] AI thinking delay + turn timer + timeout forfeit work unchanged
-- [ ] Component tests: picker switches game type, a correct answer drops a
+- [x] AI thinking delay + turn timer + timeout forfeit work unchanged
+- [x] Component tests: picker switches game type, a correct answer drops a
       disc to the bottom of the chosen column, wrong answer keeps the turn
-- [ ] Browser verify (Playwright screenshot of a live Connect Four practice
+- [x] Browser verify (Playwright screenshot of a live Connect Four practice
       game)
-- [ ] Full suite green → commit `CF-3: Connect Four practice mode`
+- [x] Full suite green → commit `CF-3: Connect Four practice mode`
 
 ## Phase CF-4: Quick Play Integration
 

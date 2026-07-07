@@ -4,6 +4,7 @@ namespace App\Livewire\Practice;
 
 use App\Enums\MatchStatus;
 use App\Models\GameMatch;
+use App\Services\GameEngine\GameFactory;
 use App\Services\MatchService;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Layout;
@@ -14,9 +15,13 @@ use Livewire\Component;
 #[Title('Latihan - OtakTangkas')]
 class Play extends Component
 {
+    public const GAME_TYPES = ['tic_tac_toe', 'connect_four'];
+
     public int $matchId;
 
-    /** The board cell the player has selected but not yet committed. */
+    public string $gameType = 'tic_tac_toe';
+
+    /** The board position the player has selected but not yet committed. */
     public ?string $selectedPosition = null;
 
     /** Transient feedback after the last answer: 'correct' | 'wrong' | null. */
@@ -40,18 +45,34 @@ class Play extends Component
             && $this->match->current_turn_user_id === auth()->id();
     }
 
+    /**
+     * Select a position to play; each game validates its own move format.
+     */
     public function selectCell(string $position): void
     {
         if (! $this->isMyTurn()) {
             return;
         }
 
-        [$row, $col] = array_map('intval', explode(',', $position));
+        $game = GameFactory::create($this->match->game_type);
 
-        if (($this->match->board_state[$row][$col] ?? '') === '') {
+        if (in_array($position, $game->getValidMoves($this->match), true)) {
             $this->selectedPosition = $position;
             $this->feedback = null;
         }
+    }
+
+    /**
+     * Switch the practice game type and deal a fresh match.
+     */
+    public function setGameType(string $gameType, MatchService $matches): void
+    {
+        if (! in_array($gameType, self::GAME_TYPES, true) || $gameType === $this->gameType) {
+            return;
+        }
+
+        $this->gameType = $gameType;
+        $this->startNewGame($matches);
     }
 
     public function answer(int $answerId, MatchService $matches): void
@@ -113,7 +134,10 @@ class Play extends Component
 
     protected function startNewGame(MatchService $matches): void
     {
-        $match = $matches->createMatch(auth()->user(), 'practice', ['difficulty' => 'easy']);
+        $match = $matches->createMatch(auth()->user(), 'practice', [
+            'difficulty' => 'easy',
+            'game_type' => $this->gameType,
+        ]);
         $this->matchId = $match->id;
         $this->selectedPosition = null;
         $this->feedback = null;

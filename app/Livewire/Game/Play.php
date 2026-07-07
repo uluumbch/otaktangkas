@@ -4,6 +4,7 @@ namespace App\Livewire\Game;
 
 use App\Enums\MatchStatus;
 use App\Models\GameMatch;
+use App\Services\GameEngine\GameFactory;
 use App\Services\MatchService;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Layout;
@@ -61,15 +62,18 @@ class Play extends Component
         unset($this->match);
     }
 
+    /**
+     * Select a position to play; each game validates its own move format.
+     */
     public function selectCell(string $position): void
     {
         if (! $this->isMyTurn()) {
             return;
         }
 
-        [$row, $col] = array_map('intval', explode(',', $position));
+        $game = GameFactory::create($this->match->game_type);
 
-        if (($this->match->board_state[$row][$col] ?? '') === '') {
+        if (in_array($position, $game->getValidMoves($this->match), true)) {
             $this->selectedPosition = $position;
             $this->feedback = null;
         }

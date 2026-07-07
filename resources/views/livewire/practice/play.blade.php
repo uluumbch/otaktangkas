@@ -1,6 +1,7 @@
 @php
     $match = $this->match;
-    $board = $match->board_state ?? [['', '', ''], ['', '', ''], ['', '', '']];
+    $board = $match->board_state ?? [];
+    $unit = $match->game_type === 'connect_four' ? 'kolom' : 'kotak';
     $status = $match->status->value;
     $myTurn = $this->isMyTurn();
     $question = $match->currentQuestion;
@@ -17,6 +18,20 @@
         <button wire:click="newGame" class="rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50">
             Game Baru
         </button>
+    </div>
+
+    {{-- Game type picker --}}
+    <div class="mt-4 flex justify-center gap-2 text-sm" role="group" aria-label="Pilih permainan">
+        @foreach (['tic_tac_toe' => '⭕ Tic-Tac-Toe', 'connect_four' => '🔴 Empat Sejajar'] as $type => $label)
+            <button
+                wire:click="setGameType('{{ $type }}')"
+                class="rounded-full px-4 py-1.5 font-medium transition
+                    {{ $gameType === $type
+                        ? 'bg-primary-600 text-white shadow-xs'
+                        : 'bg-white text-gray-600 ring-1 ring-gray-300 hover:bg-gray-50' }}">
+                {{ $label }}
+            </button>
+        @endforeach
     </div>
 
     {{-- Players / turn indicator --}}
@@ -77,28 +92,8 @@
         </div>
     @endif
 
-    {{-- Board --}}
-    <div class="mt-6 grid grid-cols-3 gap-2" wire:key="board-{{ $match->id }}">
-        @for ($r = 0; $r < 3; $r++)
-            @for ($c = 0; $c < 3; $c++)
-                @php
-                    $pos = "$r,$c";
-                    $cell = $board[$r][$c] ?? '';
-                    $isEmpty = $cell === '';
-                    $selected = $selectedPosition === $pos;
-                @endphp
-                <button
-                    wire:click="selectCell('{{ $pos }}')"
-                    @disabled(! $myTurn || ! $isEmpty)
-                    class="flex aspect-square items-center justify-center rounded-xl border-4 text-5xl font-black transition
-                        {{ $selected ? 'border-primary-500 bg-primary-50' : 'border-gray-200 bg-white' }}
-                        {{ $myTurn && $isEmpty ? 'cursor-pointer hover:border-primary-300' : 'cursor-not-allowed' }}
-                        {{ $cell === 'X' ? 'text-primary-600' : 'text-secondary-600' }}">
-                    {{ $cell }}
-                </button>
-            @endfor
-        @endfor
-    </div>
+    {{-- Board (per game type) --}}
+    @include('livewire.partials.board-'.str_replace('_', '-', $match->game_type))
     @error('board') <p class="mt-2 text-center text-sm text-red-600">{{ $message }}</p> @enderror
 
     {{-- Question --}}
@@ -121,7 +116,7 @@
                 <p class="mt-2 text-sm text-gray-500">Menunggu giliran lawan…</p>
             @else
                 <p class="mt-1 text-sm text-gray-500">
-                    {{ $selectedPosition ? 'Kotak dipilih — pilih jawaban yang benar.' : 'Pilih kotak di papan, lalu jawab.' }}
+                    {{ $selectedPosition ? ucfirst($unit).' dipilih — pilih jawaban yang benar.' : "Pilih {$unit} di papan, lalu jawab." }}
                 </p>
             @endunless
 

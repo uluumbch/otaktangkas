@@ -104,6 +104,80 @@ class PracticePlayTest extends TestCase
         $this->assertSame('X', $match->fresh()->board_state[0][0]);
     }
 
+    public function test_picker_switches_to_connect_four_and_deals_a_fresh_match(): void
+    {
+        $this->actingAs(User::factory()->create());
+
+        $component = Livewire::test(Play::class);
+        $firstId = $component->get('matchId');
+
+        $component->call('setGameType', 'connect_four')
+            ->assertSet('gameType', 'connect_four');
+
+        $match = GameMatch::find($component->get('matchId'));
+        $this->assertNotSame($firstId, $match->id);
+        $this->assertSame('connect_four', $match->game_type);
+        $this->assertCount(6, $match->board_state);
+        $this->assertCount(7, $match->board_state[0]);
+    }
+
+    public function test_unknown_game_types_are_ignored(): void
+    {
+        $this->actingAs(User::factory()->create());
+
+        $component = Livewire::test(Play::class);
+        $firstId = $component->get('matchId');
+
+        $component->call('setGameType', 'chess')
+            ->assertSet('gameType', 'tic_tac_toe');
+
+        $this->assertSame($firstId, $component->get('matchId'));
+    }
+
+    public function test_connect_four_correct_answer_drops_a_disc_to_the_bottom(): void
+    {
+        $this->actingAs(User::factory()->create());
+
+        $component = Livewire::test(Play::class)->call('setGameType', 'connect_four');
+        $match = GameMatch::with('currentQuestion.answers')->find($component->get('matchId'));
+        $correct = $match->currentQuestion->correctAnswer;
+
+        $component->call('selectCell', '3')
+            ->assertSet('selectedPosition', '3')
+            ->call('answer', $correct->id)
+            ->assertSet('feedback', 'correct');
+
+        $fresh = $match->fresh();
+        $this->assertSame('X', $fresh->board_state[5][3]); // bottom of column 3
+        $this->assertSame('', $fresh->board_state[4][3]);
+    }
+
+    public function test_connect_four_rejects_tic_tac_toe_style_positions(): void
+    {
+        $this->actingAs(User::factory()->create());
+
+        $component = Livewire::test(Play::class)->call('setGameType', 'connect_four');
+
+        $component->call('selectCell', '1,1')
+            ->assertSet('selectedPosition', null);
+    }
+
+    public function test_connect_four_wrong_answer_keeps_the_selected_column(): void
+    {
+        $this->actingAs(User::factory()->create());
+
+        $component = Livewire::test(Play::class)->call('setGameType', 'connect_four');
+        $match = GameMatch::with('currentQuestion.answers')->find($component->get('matchId'));
+        $wrong = $match->currentQuestion->answers->firstWhere('is_correct', false);
+
+        $component->call('selectCell', '2')
+            ->call('answer', $wrong->id)
+            ->assertSet('feedback', 'wrong')
+            ->assertSet('selectedPosition', '2'); // column retained for retry
+
+        $this->assertNotContains('X', collect($match->fresh()->board_state)->flatten()->all());
+    }
+
     public function test_timeout_forfeits_the_match_to_the_ai(): void
     {
         $this->actingAs($user = User::factory()->create());
