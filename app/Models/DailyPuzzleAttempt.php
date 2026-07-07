@@ -16,6 +16,19 @@ class DailyPuzzleAttempt extends Model
     /** @use HasFactory<\Database\Factories\DailyPuzzleAttemptFactory> */
     use HasFactory;
 
+    /**
+     * Mirror the DB defaults so freshly created models behave the same
+     * before and after a refresh.
+     */
+    protected $attributes = [
+        'is_completed' => false,
+        'moves_used' => 0,
+        'correct_answers' => 0,
+        'score' => 0,
+        'xp_earned' => 0,
+        'coins_earned' => 0,
+    ];
+
     protected function casts(): array
     {
         return [
