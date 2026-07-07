@@ -18,8 +18,8 @@ if work is interrupted.
 | UI-1 | Game design system (theme, animations, layout/nav) | ✅ done | `62a063c` |
 | UI-2 | Board & gameplay feel (tiles, discs, motion, feedback) | ✅ done | `40ac063` |
 | UI-3 | Match stage (VS header, celebrations, AI bubble) | ✅ done | `eceff05` |
-| UI-4 | Lobby, dashboard & puzzle alignment | ✅ done | see git log |
-| UI-5 | Verification sweep + closeout | ⬜ pending | – |
+| UI-4 | Lobby, dashboard & puzzle alignment | ✅ done | `ed3d0fb` |
+| UI-5 | Verification sweep + closeout | ✅ done | see git log |
 
 **Resume rule:** find the first non-✅ phase, run `php artisan test` and
 `npm run build` to confirm a green baseline, then continue from that phase's
@@ -126,12 +126,13 @@ Make entry points feel like a game menu, not a settings page.
 ## Phase UI-5: Verification Sweep + Closeout
 
 ### Checklist
-- [ ] Full suite green
-- [ ] Browser screenshots: dashboard, Practice (both games mid-match), Quick
-      Play lobby + live match, Daily Puzzle, win celebration, and a 390 px
-      mobile pass
-- [ ] Status Log above fully ✅ with commit hashes
-- [ ] Push
+- [x] Full suite green (114 tests / 350 assertions)
+- [x] Browser screenshots: dashboard, Practice (both games mid-match), Quick
+      Play lobby, Daily Puzzle (completion + confetti), win celebration, and
+      a 390 px mobile pass
+- [x] Status Log above fully ✅ with commit hashes (UI-5's own hash in
+      `git log`)
+- [x] Push
 
 ---
 
