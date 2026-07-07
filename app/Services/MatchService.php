@@ -7,6 +7,8 @@ use App\Events\MatchUpdated;
 use App\Models\GameMatch;
 use App\Models\User;
 use App\Services\GameEngine\GameFactory;
+use App\Services\Progression\AchievementService;
+use App\Services\Progression\RankService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
@@ -14,6 +16,8 @@ class MatchService
 {
     public function __construct(
         protected QuestionService $questionService,
+        protected AchievementService $achievements,
+        protected RankService $ranks,
     ) {}
 
     /**
@@ -255,6 +259,14 @@ class MatchService
         $match->xp_awarded = $baseXp;
         $match->coins_awarded = $baseCoins;
         $match->save();
+
+        // Progression: unlock achievements, then re-derive rank from level.
+        foreach ([$match->player1, $match->player2] as $player) {
+            if ($player && ! $player->is_guest) {
+                $this->achievements->evaluate($player);
+                $this->ranks->sync($player);
+            }
+        }
 
         event(new MatchEnded($match));
     }

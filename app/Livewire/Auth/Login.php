@@ -2,6 +2,8 @@
 
 namespace App\Livewire\Auth;
 
+use App\Services\Progression\AchievementService;
+use App\Services\Progression\StreakService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
 use Livewire\Attributes\Layout;
@@ -27,7 +29,7 @@ class Login extends Component
         ];
     }
 
-    public function login()
+    public function login(StreakService $streaks, AchievementService $achievements)
     {
         $this->validate();
 
@@ -38,6 +40,10 @@ class Login extends Component
         }
 
         session()->regenerate();
+
+        // Update the daily login streak and unlock any streak achievements.
+        $streaks->recordLogin(Auth::user());
+        $achievements->evaluate(Auth::user());
 
         return $this->redirectIntended(route('dashboard'), navigate: true);
     }
