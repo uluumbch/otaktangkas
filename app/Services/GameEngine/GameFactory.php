@@ -3,6 +3,7 @@
 namespace App\Services\GameEngine;
 
 use App\Contracts\GameInterface;
+use App\Services\GameEngine\Games\ConnectFourGame;
 use App\Services\GameEngine\Games\TicTacToeGame;
 use InvalidArgumentException;
 
@@ -12,6 +13,7 @@ class GameFactory
     {
         return match ($gameType) {
             'tic_tac_toe' => new TicTacToeGame(),
+            'connect_four' => new ConnectFourGame(),
             default => throw new InvalidArgumentException("Game type {$gameType} not supported"),
         };
     }

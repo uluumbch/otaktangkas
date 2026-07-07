@@ -41,6 +41,19 @@ class MatchServiceTest extends TestCase
         $this->assertSame([['', '', ''], ['', '', ''], ['', '', '']], $match->board_state);
     }
 
+    public function test_creating_a_connect_four_match_initializes_a_6x7_board(): void
+    {
+        $this->seedQuestions();
+        $player = User::factory()->create();
+
+        $match = $this->service()->createMatch($player, 'practice', ['game_type' => 'connect_four']);
+
+        $this->assertSame('connect_four', $match->game_type);
+        $this->assertCount(6, $match->board_state);
+        $this->assertCount(7, $match->board_state[0]);
+        $this->assertSame('connect_four', $match->fresh()->game_type); // survives the enum column
+    }
+
     public function test_a_correct_answer_places_a_symbol_and_awards_rewards(): void
     {
         $this->seedQuestions();

@@ -11,7 +11,7 @@ the Status Log below shows exactly where to resume.
 
 | Phase | Scope | Status | Commit |
 |-------|-------|--------|--------|
-| CF-1 | Game engine + migration | ⬜ pending | – |
+| CF-1 | Game engine + migration | ✅ done | `see git log` |
 | CF-2 | AI opponent | ⬜ pending | – |
 | CF-3 | Practice mode integration | ⬜ pending | – |
 | CF-4 | Quick Play integration | ⬜ pending | – |
@@ -62,22 +62,22 @@ New `ConnectFourGame` behind the existing `GameInterface`, registered in
 `GameFactory`, with the enum migration. No UI yet — engine + tests only.
 
 ### Checklist
-- [ ] Migration: add `connect_four` to `matches.game_type` enum
-- [ ] `app/Services/GameEngine/Games/ConnectFourGame.php`
-  - [ ] `initialize()`: 6×7 empty board
-  - [ ] `makeMove()`: gravity drop into a column; rejects wrong answers,
+- [x] Migration: add `connect_four` to `matches.game_type` enum
+- [x] `app/Services/GameEngine/Games/ConnectFourGame.php`
+  - [x] `initialize()`: 6×7 empty board
+  - [x] `makeMove()`: gravity drop into a column; rejects wrong answers,
         invalid columns, and full columns
-  - [ ] `checkGameOver()`: four-in-a-row horizontal / vertical / both
+  - [x] `checkGameOver()`: four-in-a-row horizontal / vertical / both
         diagonals; `draw` when the board fills
-  - [ ] `getValidMoves()`: non-full columns as `"0"`…`"6"`
-  - [ ] `getGameState()`: same shape as Tic-Tac-Toe's
-- [ ] Register `connect_four` in `GameFactory`
-- [ ] Unit tests (`tests/Unit/ConnectFourGameTest.php`): gravity stacking,
+  - [x] `getValidMoves()`: non-full columns as `"0"`…`"6"`
+  - [x] `getGameState()`: same shape as Tic-Tac-Toe's
+- [x] Register `connect_four` in `GameFactory`
+- [x] Unit tests (`tests/Unit/ConnectFourGameTest.php`): gravity stacking,
       wrong answer makes no move, full column rejected, all four win
       directions, draw, valid-move list shrinks as columns fill
-- [ ] Feature check: `MatchService::createMatch` with
+- [x] Feature check: `MatchService::createMatch` with
       `['game_type' => 'connect_four']` initializes a 6×7 board
-- [ ] Full suite green → commit `CF-1: Connect Four engine`
+- [x] Full suite green → commit `CF-1: Connect Four engine`
 
 ## Phase CF-2: AI Opponent
 
