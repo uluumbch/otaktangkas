@@ -16,8 +16,8 @@ if work is interrupted.
 | Phase | Scope | Status | Commit |
 |-------|-------|--------|--------|
 | UI-1 | Game design system (theme, animations, layout/nav) | ✅ done | `62a063c` |
-| UI-2 | Board & gameplay feel (tiles, discs, motion, feedback) | ✅ done | see git log |
-| UI-3 | Match stage (VS header, celebrations, AI bubble) | ⬜ pending | – |
+| UI-2 | Board & gameplay feel (tiles, discs, motion, feedback) | ✅ done | `40ac063` |
+| UI-3 | Match stage (VS header, celebrations, AI bubble) | ✅ done | see git log |
 | UI-4 | Lobby, dashboard & puzzle alignment | ⬜ pending | – |
 | UI-5 | Verification sweep + closeout | ⬜ pending | – |
 
@@ -97,14 +97,15 @@ The core "this is a game" moment.
 Frame every match like an event.
 
 ### Checklist
-- [ ] VS header: avatar initial circles with symbol badges, active player
-      `pulse-glow` ring, styled "VS" divider
-- [ ] Result celebration: win = gradient card + trophy + CSS confetti
-      pieces; lose/draw variants; reward chips (+XP / +koin) on completion
-- [ ] AI thinking indicator becomes a chat-style bubble next to the AI's
-      avatar
-- [ ] Applies to Practice and Quick Play match views
-- [ ] `npm run build` + full suite green → commit `UI-3: match stage`
+- [x] VS header: avatar initial circles with symbol badges, active player
+      `pulse-glow` ring, styled "VS" divider (shared partial)
+- [x] Result celebration: win = gradient card + floating trophy + CSS
+      confetti pieces; lose/draw variants; reward chips (+XP / +koin) on
+      completion mirroring endMatch's winner multiplier
+- [x] AI thinking indicator becomes a chat-style bubble next to the AI's
+      avatar with bouncing dots
+- [x] Applies to Practice and Quick Play match views
+- [x] `npm run build` + full suite green → commit `UI-3: match stage`
 
 ## Phase UI-4: Lobby, Dashboard & Puzzle Alignment
 

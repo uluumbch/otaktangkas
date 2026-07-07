@@ -35,15 +35,14 @@
     </div>
 
     {{-- Players / turn indicator --}}
-    <div class="mt-4 flex items-center justify-center gap-4 text-sm">
-        <span class="flex items-center gap-2 rounded-full px-3 py-1 {{ $myTurn ? 'bg-primary-100 text-primary-800 ring-2 ring-primary-400' : 'bg-gray-100 text-gray-600' }}">
-            <span class="text-lg font-black text-primary-600">X</span> {{ $match->player1->name }}
-        </span>
-        <span class="text-gray-400">vs</span>
-        <span class="flex items-center gap-2 rounded-full px-3 py-1 {{ ! $myTurn && $status === 'in_progress' ? 'bg-secondary-100 text-secondary-800 ring-2 ring-secondary-400' : 'bg-gray-100 text-gray-600' }}">
-            <span class="text-lg font-black text-secondary-600">O</span> AI
-        </span>
-    </div>
+    @include('livewire.partials.vs-header', [
+        'p1Name' => $match->player1->name,
+        'p2Name' => 'AI',
+        'p1Symbol' => $match->player1_symbol,
+        'p2Symbol' => $match->player2_symbol,
+        'p1Active' => $myTurn,
+        'p2Active' => ! $myTurn && $status === 'in_progress',
+    ])
 
     {{-- Turn timer (player's turn only) --}}
     @if ($status === 'in_progress' && $myTurn)
@@ -60,35 +59,55 @@
 
     {{-- Result banner --}}
     @if ($over)
-        @php
-            $banner = match ($match->result) {
-                'player1_win' => ['Kamu Menang! 🎉', 'bg-green-50 text-green-800 ring-green-200'],
-                'player2_win' => ['Kamu Kalah 😔', 'bg-red-50 text-red-800 ring-red-200'],
-                default => ['Seri 🤝', 'bg-yellow-50 text-yellow-800 ring-yellow-200'],
-            };
-        @endphp
-        <div class="mt-6 rounded-xl px-4 py-4 text-center text-lg font-bold ring-1 {{ $banner[1] }}">
-            @if ($status === 'abandoned')<p class="text-sm font-medium text-red-600">⏱ Waktu habis!</p>@endif
-            {{ $banner[0] }}
-            <div class="mt-3">
-                <button wire:click="newGame" class="rounded-lg bg-primary-600 px-5 py-2 text-sm font-semibold text-white hover:bg-primary-700">
+        @php $iWon = $match->result === 'player1_win'; @endphp
+        @if ($iWon)
+            <div class="shadow-game relative mt-6 overflow-hidden rounded-2xl bg-linear-to-br from-primary-500 to-secondary-600 px-4 py-6 text-center text-white">
+                @include('livewire.partials.confetti')
+                <div class="animate-float text-5xl">🏆</div>
+                <p class="animate-pop-in mt-2 text-2xl font-black tracking-tight">Kamu Menang! 🎉</p>
+                @if ($status === 'completed')
+                    <div class="mt-3 flex justify-center gap-2 text-sm">
+                        <span class="chip-hud bg-white/20 text-white">+{{ (int) ($match->xp_awarded * 1.5) }} XP</span>
+                        <span class="chip-hud bg-white/20 text-white">🪙 +{{ (int) ($match->coins_awarded * 1.5) }}</span>
+                    </div>
+                @endif
+                <button wire:click="newGame" class="btn-game mt-4 border-white/40 bg-white/20 text-sm hover:bg-white/30">
                     Main Lagi
                 </button>
             </div>
-        </div>
+        @else
+            @php
+                $banner = $match->result === 'player2_win'
+                    ? ['😔', 'Kamu Kalah', 'Jangan menyerah — coba lagi!']
+                    : ['🤝', 'Seri', 'Ketat! Sekali lagi?'];
+            @endphp
+            <div class="shadow-game mt-6 rounded-2xl bg-white px-4 py-6 text-center">
+                @if ($status === 'abandoned')<p class="text-sm font-bold text-red-600">⏱ Waktu habis!</p>@endif
+                <div class="text-5xl">{{ $banner[0] }}</div>
+                <p class="mt-2 text-2xl font-black tracking-tight text-gray-900">{{ $banner[1] }}</p>
+                <p class="mt-1 text-sm text-gray-500">{{ $banner[2] }}</p>
+                <button wire:click="newGame" class="btn-game mt-4 text-sm">
+                    Main Lagi
+                </button>
+            </div>
+        @endif
     @endif
 
     {{-- AI thinking: after the player's move lands, pause briefly then let the AI play. --}}
     @if ($status === 'in_progress' && ! $myTurn)
-        <div class="mt-4 flex items-center justify-center gap-2 text-sm font-medium text-secondary-600"
+        <div class="mt-4 flex items-center justify-center gap-2"
              wire:key="ai-thinking-{{ $match->id }}-{{ $match->current_question_id }}"
              x-data
              x-init="setTimeout(() => $wire.aiTurn(), 900)">
-            <svg class="size-4 animate-spin" width="16" height="16" viewBox="0 0 24 24" fill="none">
-                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.4 0 0 5.4 0 12h4z"></path>
-            </svg>
-            AI sedang berpikir…
+            <span class="flex size-8 items-center justify-center rounded-full bg-linear-to-br from-secondary-400 to-secondary-600 text-sm font-black text-white">A</span>
+            <span class="flex items-center gap-1.5 rounded-2xl rounded-bl-xs bg-white px-3 py-2 text-sm font-bold text-secondary-700 shadow-xs ring-1 ring-black/5">
+                AI sedang berpikir
+                <span class="flex gap-0.5">
+                    <span class="size-1 animate-bounce rounded-full bg-secondary-400" style="animation-delay: 0ms"></span>
+                    <span class="size-1 animate-bounce rounded-full bg-secondary-400" style="animation-delay: 150ms"></span>
+                    <span class="size-1 animate-bounce rounded-full bg-secondary-400" style="animation-delay: 300ms"></span>
+                </span>
+            </span>
         </div>
     @endif
 

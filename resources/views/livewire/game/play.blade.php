@@ -27,15 +27,14 @@
         </div>
     @else
         {{-- Players / turn indicator --}}
-        <div class="mt-4 flex items-center justify-center gap-4 text-sm">
-            <span class="flex items-center gap-2 rounded-full px-3 py-1 {{ $myTurn ? 'bg-primary-100 text-primary-800 ring-2 ring-primary-400' : 'bg-gray-100 text-gray-600' }}">
-                <span class="text-lg font-black text-primary-600">{{ $mySymbol }}</span> Kamu
-            </span>
-            <span class="text-gray-400">vs</span>
-            <span class="flex items-center gap-2 rounded-full px-3 py-1 {{ ! $myTurn && $status === 'in_progress' ? 'bg-secondary-100 text-secondary-800 ring-2 ring-secondary-400' : 'bg-gray-100 text-gray-600' }}">
-                <span class="text-lg font-black text-secondary-600">{{ $mySymbol === 'X' ? 'O' : 'X' }}</span> {{ $opponent?->name ?? 'Lawan' }}
-            </span>
-        </div>
+        @include('livewire.partials.vs-header', [
+            'p1Name' => 'Kamu',
+            'p2Name' => $opponent?->name ?? 'Lawan',
+            'p1Symbol' => $mySymbol,
+            'p2Symbol' => $mySymbol === 'X' ? 'O' : 'X',
+            'p1Active' => $myTurn,
+            'p2Active' => ! $myTurn && $status === 'in_progress',
+        ])
 
         {{-- Turn timer (player's turn only) --}}
         @if ($status === 'in_progress' && $myTurn)
@@ -52,25 +51,40 @@
 
         {{-- Result banner --}}
         @if ($over)
-            @php
-                $iWon = $match->winner_id === auth()->id();
-                $banner = match (true) {
-                    $match->result === 'draw' => ['Seri 🤝', 'bg-yellow-50 text-yellow-800 ring-yellow-200'],
-                    $iWon => ['Kamu Menang! 🎉', 'bg-green-50 text-green-800 ring-green-200'],
-                    default => ['Kamu Kalah 😔', 'bg-red-50 text-red-800 ring-red-200'],
-                };
-            @endphp
-            <div class="mt-6 rounded-xl px-4 py-4 text-center text-lg font-bold ring-1 {{ $banner[1] }}">
-                @if ($status === 'abandoned')<p class="text-sm font-medium text-red-600">⏱ Waktu habis atau lawan keluar</p>@endif
-                {{ $banner[0] }}
-                <div class="mt-3">
-                    <a href="{{ route('quick-play') }}" wire:navigate class="inline-block rounded-lg bg-primary-600 px-5 py-2 text-sm font-semibold text-white hover:bg-primary-700">
+            @php $iWon = $match->winner_id === auth()->id(); @endphp
+            @if ($iWon && $match->result !== 'draw')
+                <div class="shadow-game relative mt-6 overflow-hidden rounded-2xl bg-linear-to-br from-primary-500 to-secondary-600 px-4 py-6 text-center text-white">
+                    @include('livewire.partials.confetti')
+                    <div class="animate-float text-5xl">🏆</div>
+                    <p class="animate-pop-in mt-2 text-2xl font-black tracking-tight">Kamu Menang! 🎉</p>
+                    @if ($status === 'completed')
+                        <div class="mt-3 flex justify-center gap-2 text-sm">
+                            <span class="chip-hud bg-white/20 text-white">+{{ (int) ($match->xp_awarded * 1.5) }} XP</span>
+                            <span class="chip-hud bg-white/20 text-white">🪙 +{{ (int) ($match->coins_awarded * 1.5) }}</span>
+                        </div>
+                    @endif
+                    <a href="{{ route('quick-play') }}" wire:navigate class="btn-game mt-4 border-white/40 bg-white/20 text-sm hover:bg-white/30">
                         Main Lagi
                     </a>
                 </div>
-            </div>
+            @else
+                @php
+                    $banner = $match->result === 'draw'
+                        ? ['🤝', 'Seri', 'Ketat! Sekali lagi?']
+                        : ['😔', 'Kamu Kalah', 'Jangan menyerah — coba lagi!'];
+                @endphp
+                <div class="shadow-game mt-6 rounded-2xl bg-white px-4 py-6 text-center">
+                    @if ($status === 'abandoned')<p class="text-sm font-bold text-red-600">⏱ Waktu habis atau lawan keluar</p>@endif
+                    <div class="text-5xl">{{ $banner[0] }}</div>
+                    <p class="mt-2 text-2xl font-black tracking-tight text-gray-900">{{ $banner[1] }}</p>
+                    <p class="mt-1 text-sm text-gray-500">{{ $banner[2] }}</p>
+                    <a href="{{ route('quick-play') }}" wire:navigate class="btn-game mt-4 text-sm">
+                        Main Lagi
+                    </a>
+                </div>
+            @endif
         @elseif (! $myTurn)
-            <p class="mt-4 text-center text-sm font-medium text-gray-500">Menunggu giliran lawan…</p>
+            <p class="mt-4 text-center text-sm font-bold text-gray-500">Menunggu giliran lawan…</p>
         @endif
 
         {{-- Board (per game type) --}}
