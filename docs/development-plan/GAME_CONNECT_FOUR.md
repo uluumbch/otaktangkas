@@ -11,8 +11,8 @@ the Status Log below shows exactly where to resume.
 
 | Phase | Scope | Status | Commit |
 |-------|-------|--------|--------|
-| CF-1 | Game engine + migration | ✅ done | `see git log` |
-| CF-2 | AI opponent | ⬜ pending | – |
+| CF-1 | Game engine + migration | ✅ done | `987818d` |
+| CF-2 | AI opponent | ✅ done | see git log |
 | CF-3 | Practice mode integration | ⬜ pending | – |
 | CF-4 | Quick Play integration | ⬜ pending | – |
 | CF-5 | Closeout (docs sweep, full verify) | ⬜ pending | – |
@@ -84,14 +84,15 @@ New `ConnectFourGame` behind the existing `GameInterface`, registered in
 `getAIMove()` for the three practice difficulties.
 
 ### Checklist
-- [ ] `easy`: random valid column
-- [ ] `medium`: 70 % optimal / 30 % random
-- [ ] `hard`: win-now → block → don't gift a win (skip columns where the
+- [x] `easy`: random valid column
+- [x] `medium`: 70 % optimal / 30 % random
+- [x] `hard`: win-now → block → don't gift a win (skip columns where the
       opponent wins by dropping on top of our disc) → center-out preference
-- [ ] Tests: AI takes an immediate win, blocks an immediate loss, avoids the
+- [x] Tests: AI takes an immediate win, blocks an immediate loss, avoids the
       gift column when a safe column exists, easy mode still returns a legal
-      move on a crowded board
-- [ ] Full suite green → commit `CF-2: Connect Four AI`
+      move on a crowded board (plus a column-`"0"`-is-falsy block regression
+      found during implementation)
+- [x] Suite green → commit `CF-2: Connect Four AI`
 
 ## Phase CF-3: Practice Mode Integration
 

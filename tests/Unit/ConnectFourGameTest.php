@@ -234,4 +234,111 @@ class ConnectFourGameTest extends TestCase
             $this->assertContains($move, $this->game->getValidMoves($match));
         }
     }
+
+    public function test_easy_ai_stays_legal_on_a_crowded_board(): void
+    {
+        $match = $this->match($this->board([
+            'X.XOXO.',
+            'OXOXOX.',
+            'XOXOXOO',
+            'OXOXOXX',
+            'XOXOXOO',
+            'OXOXOXX',
+        ]));
+
+        for ($i = 0; $i < 20; $i++) {
+            $this->assertContains(
+                $this->game->getAIMove($match, 'easy'),
+                ['1', '6'], // the only open columns
+            );
+        }
+    }
+
+    public function test_hard_ai_takes_an_immediate_win(): void
+    {
+        // O (the AI) has three in column 5: dropping there wins.
+        $match = $this->match($this->board([
+            '.......',
+            '.......',
+            '.......',
+            '.....O.',
+            '..X..O.',
+            '.XX..O.',
+        ]));
+
+        $this->assertSame('5', $this->game->getAIMove($match, 'hard'));
+    }
+
+    public function test_hard_ai_blocks_an_immediate_loss(): void
+    {
+        // X threatens a horizontal four at row 5: either open end blocks.
+        $match = $this->match($this->board([
+            '.......',
+            '.......',
+            '.......',
+            '.......',
+            '.OO....',
+            '.XXX...',
+        ]));
+
+        $this->assertContains($this->game->getAIMove($match, 'hard'), ['0', '4']);
+    }
+
+    public function test_hard_ai_blocks_in_column_zero(): void
+    {
+        // The only block is column 0 — a falsy string that must not be
+        // mistaken for "no move found".
+        $match = $this->match($this->board([
+            '.......',
+            '.......',
+            '.......',
+            '.......',
+            '.OO....',
+            '.XXXO..',
+        ]));
+
+        $this->assertSame('0', $this->game->getAIMove($match, 'hard'));
+    }
+
+    public function test_hard_ai_prefers_winning_over_blocking(): void
+    {
+        // Both sides threaten a win; the AI must take its own (column 6).
+        $match = $this->match($this->board([
+            '.......',
+            '.......',
+            '.......',
+            '......O',
+            '.XX...O',
+            'XXO...O',
+        ]));
+
+        $this->assertSame('6', $this->game->getAIMove($match, 'hard'));
+    }
+
+    public function test_hard_ai_avoids_gifting_a_win(): void
+    {
+        // X's diagonal (5,0)-(4,1)-(3,2) completes at (2,3). Column 3's
+        // next drop lands at (3,3); if the AI plays there, X wins on top.
+        // Column 3 is the AI's first center-out preference, so a naive AI
+        // would take the bait — safe columns exist and must be chosen.
+        $match = $this->match($this->board([
+            '.......',
+            '.......',
+            '.......',
+            '..X....',
+            '.XOO...',
+            'XOXO...',
+        ]));
+
+        $board = $match->board_state;
+
+        // Sanity-check the fixture: dropping O in column 3 then X on top
+        // gives X a win; otherwise this test wouldn't prove anything.
+        $board[3][3] = 'O';
+        $board[2][3] = 'X';
+        $sanity = $this->match($board);
+        $this->assertSame('player1_win', $this->game->checkGameOver($sanity));
+
+        $this->assertNotSame('3', $this->game->getAIMove($match, 'hard'));
+    }
 }

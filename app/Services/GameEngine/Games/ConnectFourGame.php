@@ -98,9 +98,107 @@ class ConnectFourGame implements GameInterface
 
     public function getAIMove(GameMatch $match, string $difficulty = 'medium'): ?string
     {
+        return match ($difficulty) {
+            'easy' => $this->getRandomMove($match),
+            'hard' => $this->getOptimalMove($match),
+            default => $this->getMediumMove($match),
+        };
+    }
+
+    protected function getRandomMove(GameMatch $match): ?string
+    {
         $validMoves = $this->getValidMoves($match);
 
         return $validMoves === [] ? null : $validMoves[array_rand($validMoves)];
+    }
+
+    protected function getMediumMove(GameMatch $match): ?string
+    {
+        // 70% optimal, 30% random — same policy as Tic-Tac-Toe.
+        return random_int(1, 100) <= 70
+            ? $this->getOptimalMove($match)
+            : $this->getRandomMove($match);
+    }
+
+    protected function getOptimalMove(GameMatch $match): ?string
+    {
+        $board = $match->board_state ?? $this->initialize($match);
+        $aiSymbol = $match->player2_symbol;
+        $playerSymbol = $match->player1_symbol;
+
+        // Win if possible, otherwise block the opponent's win. Compare
+        // against null explicitly: column "0" is a falsy string.
+        if (($winningMove = $this->findWinningColumn($board, $aiSymbol)) !== null) {
+            return $winningMove;
+        }
+
+        if (($blockingMove = $this->findWinningColumn($board, $playerSymbol)) !== null) {
+            return $blockingMove;
+        }
+
+        // Prefer center-out, skipping columns where our drop lets the
+        // opponent win by playing on top of it.
+        $preferred = ['3', '2', '4', '1', '5', '0', '6'];
+        $valid = $this->getValidMoves($match);
+        $candidates = array_values(array_intersect($preferred, $valid));
+
+        foreach ($candidates as $column) {
+            if (! $this->giftsOpponentWin($board, (int) $column, $aiSymbol, $playerSymbol)) {
+                return $column;
+            }
+        }
+
+        // Every column gifts a win: take the first preference anyway.
+        return $candidates[0] ?? null;
+    }
+
+    /**
+     * A column where dropping this symbol wins immediately, or null.
+     */
+    protected function findWinningColumn(array $board, string $symbol): ?string
+    {
+        for ($col = 0; $col < self::COLS; $col++) {
+            $row = $this->dropRow($board, $col);
+
+            if ($row === null) {
+                continue;
+            }
+
+            $testBoard = $board;
+            $testBoard[$row][$col] = $symbol;
+
+            if ($this->checkWin($testBoard, $symbol)) {
+                return (string) $col;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Would dropping into this column let the opponent win by playing
+     * the cell directly above our disc?
+     */
+    protected function giftsOpponentWin(array $board, int $col, string $ownSymbol, string $opponentSymbol): bool
+    {
+        $row = $this->dropRow($board, $col);
+
+        if ($row === null) {
+            return false;
+        }
+
+        $testBoard = $board;
+        $testBoard[$row][$col] = $ownSymbol;
+
+        $rowAbove = $row - 1;
+
+        if ($rowAbove < 0) {
+            return false;
+        }
+
+        $testBoard[$rowAbove][$col] = $opponentSymbol;
+
+        return $this->checkWin($testBoard, $opponentSymbol);
     }
 
     public function getGameState(GameMatch $match): array
