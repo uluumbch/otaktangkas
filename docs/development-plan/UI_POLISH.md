@@ -17,8 +17,8 @@ if work is interrupted.
 |-------|-------|--------|--------|
 | UI-1 | Game design system (theme, animations, layout/nav) | ✅ done | `62a063c` |
 | UI-2 | Board & gameplay feel (tiles, discs, motion, feedback) | ✅ done | `40ac063` |
-| UI-3 | Match stage (VS header, celebrations, AI bubble) | ✅ done | see git log |
-| UI-4 | Lobby, dashboard & puzzle alignment | ⬜ pending | – |
+| UI-3 | Match stage (VS header, celebrations, AI bubble) | ✅ done | `eceff05` |
+| UI-4 | Lobby, dashboard & puzzle alignment | ✅ done | see git log |
 | UI-5 | Verification sweep + closeout | ⬜ pending | – |
 
 **Resume rule:** find the first non-✅ phase, run `php artisan test` and
@@ -112,15 +112,16 @@ Frame every match like an event.
 Make entry points feel like a game menu, not a settings page.
 
 ### Checklist
-- [ ] Dashboard: hero mode cards (Latihan / Quick Play / Puzzle Harian) with
-      floating emoji + hover scale; quick links to Peringkat & Prestasi;
-      stats row as HUD chips with an XP progress bar toward the next level
-- [ ] Quick Play lobby: game picker as two mini board-preview cards (3×3
+- [x] Dashboard: hero mode cards (Latihan / Quick Play / Puzzle Harian) with
+      floating emoji + hover lift; quick links to Peringkat & Prestasi;
+      stats HUD (menang/main/streak/koin) with an XP progress bar toward the
+      next level
+- [x] Quick Play lobby: game picker as two mini board-preview cards (3×3
       grid vs disc grid) with selected glow; chunky "Cari Lawan" button
-- [ ] Practice picker restyled to match (compact variant)
-- [ ] Daily Puzzle page aligned: same header treatment, tile/glow styles,
-      chunky buttons
-- [ ] `npm run build` + full suite green → commit `UI-4: lobby & dashboard`
+- [x] Practice picker restyled to match (gradient pill variant)
+- [x] Daily Puzzle page aligned: same header/tile/glow styles, chunky
+      buttons, pulsing timer, confetti celebration on completion
+- [x] `npm run build` + full suite green → commit `UI-4: lobby & dashboard`
 
 ## Phase UI-5: Verification Sweep + Closeout
 

@@ -8,10 +8,10 @@
 
 <div class="mx-auto max-w-2xl px-4 py-8">
     {{-- Header --}}
-    <div class="rounded-2xl bg-linear-to-r from-primary-600 to-secondary-600 p-6 text-white">
+    <div class="shadow-game rounded-3xl bg-linear-to-r from-primary-600 to-secondary-600 p-6 text-white">
         <div class="flex flex-wrap items-center justify-between gap-2">
             <div>
-                <h1 class="text-2xl font-bold">🧩 Puzzle Harian</h1>
+                <h1 class="text-2xl font-black tracking-tight">🧩 Puzzle Harian</h1>
                 <p class="mt-0.5 text-sm text-white/80">{{ $puzzle->puzzle_date->format('d M Y') }} · {{ $puzzle->category->name ?? '' }}</p>
             </div>
             <div class="text-right">
@@ -24,7 +24,7 @@
 
     {{-- Intro / start --}}
     @if (! $attempt)
-        <div class="mt-6 rounded-2xl bg-white p-6 text-center shadow-xs">
+        <div class="shadow-game mt-6 rounded-2xl bg-white p-6 text-center">
             <p class="text-gray-700">
                 Klaim kotak yang tepat untuk melengkapi garis kemenangan <span class="font-black text-primary-600">X</span>.
                 Setiap kotak dijaga satu pertanyaan — jawaban salah boleh dicoba lagi, tapi mengurangi skor.
@@ -32,7 +32,7 @@
             <p class="mt-2 text-sm text-gray-500">
                 Satu kesempatan per hari · Batas waktu {{ intdiv($puzzle->time_limit, 60) }} menit dimulai saat kamu menekan Mulai.
             </p>
-            <button wire:click="start" class="mt-4 rounded-lg bg-primary-600 px-6 py-2.5 font-semibold text-white transition hover:bg-primary-700">
+            <button wire:click="start" class="btn-game mt-4 px-6">
                 Mulai Puzzle
             </button>
         </div>
@@ -44,8 +44,8 @@
              wire:key="puzzle-timer-{{ $attempt->id }}"
              x-data="{ left: {{ $remaining }} }"
              x-init="$nextTick(() => { const t = setInterval(() => { if (--left <= 0) { clearInterval(t); $wire.timedOut(); } }, 1000); })">
-            <span class="rounded-full px-3 py-1 text-sm font-semibold"
-                  :class="left <= 15 ? 'bg-red-100 text-red-700' : 'bg-gray-100 text-gray-600'">
+            <span class="rounded-full px-3 py-1 text-sm font-bold shadow-xs ring-1 ring-black/5"
+                  :class="left <= 15 ? 'bg-red-100 text-red-700 animate-pulse' : 'bg-white text-gray-600'">
                 ⏱ <span x-text="Math.floor(left / 60)"></span>:<span x-text="String(left % 60).padStart(2, '0')"></span>
             </span>
         </div>
@@ -53,22 +53,25 @@
 
     {{-- Result banners --}}
     @if ($done)
-        <div class="mt-6 rounded-xl bg-green-50 px-4 py-5 text-center ring-1 ring-green-200">
-            <p class="text-lg font-bold text-green-800">Puzzle Selesai! 🎉</p>
-            <div class="mt-3 flex flex-wrap justify-center gap-3 text-sm">
-                <span class="rounded-full bg-white px-3 py-1 font-semibold text-gray-700">Skor: {{ number_format($attempt->score) }}</span>
-                <span class="rounded-full bg-white px-3 py-1 font-semibold text-gray-700">⏱ {{ $attempt->time_taken }} dtk</span>
-                <span class="rounded-full bg-white px-3 py-1 font-semibold text-gray-700">✓ {{ $attempt->correct_answers }}/{{ $attempt->moves_used }} jawaban</span>
+        <div class="shadow-game relative mt-6 overflow-hidden rounded-2xl bg-linear-to-br from-primary-500 to-secondary-600 px-4 py-6 text-center text-white">
+            @include('livewire.partials.confetti')
+            <div class="animate-float text-5xl">🧩</div>
+            <p class="animate-pop-in mt-2 text-2xl font-black tracking-tight">Puzzle Selesai! 🎉</p>
+            <div class="mt-3 flex flex-wrap justify-center gap-2 text-sm">
+                <span class="chip-hud bg-white/20 text-white">Skor: {{ number_format($attempt->score) }}</span>
+                <span class="chip-hud bg-white/20 text-white">⏱ {{ $attempt->time_taken }} dtk</span>
+                <span class="chip-hud bg-white/20 text-white">✓ {{ $attempt->correct_answers }}/{{ $attempt->moves_used }} jawaban</span>
             </div>
-            <p class="mt-3 text-sm font-medium text-green-700">
+            <p class="mt-3 text-sm font-black">
                 +{{ $attempt->xp_earned }} XP · +🪙 {{ $attempt->coins_earned }}
             </p>
-            <p class="mt-1 text-xs text-gray-500">Puzzle baru tersedia besok!</p>
+            <p class="mt-1 text-xs text-white/80">Puzzle baru tersedia besok!</p>
         </div>
     @elseif ($expired)
-        <div class="mt-6 rounded-xl bg-red-50 px-4 py-5 text-center ring-1 ring-red-200">
-            <p class="text-lg font-bold text-red-800">⏱ Waktu Habis!</p>
-            <p class="mt-1 text-sm text-red-700">Puzzle hari ini berakhir tanpa hadiah. Coba lagi besok!</p>
+        <div class="shadow-game mt-6 rounded-2xl bg-white px-4 py-6 text-center">
+            <div class="text-5xl">⏱</div>
+            <p class="mt-2 text-2xl font-black tracking-tight text-red-700">Waktu Habis!</p>
+            <p class="mt-1 text-sm text-gray-500">Puzzle hari ini berakhir tanpa hadiah. Coba lagi besok!</p>
         </div>
     @endif
 
@@ -81,10 +84,15 @@
                     $isTarget = $targetCell === $i;
                     $isSolution = in_array($i, $solutionCells, true);
                 @endphp
-                <div class="flex aspect-square items-center justify-center rounded-xl border-4 text-5xl font-black transition
-                        {{ $isTarget ? 'animate-pulse border-primary-500 bg-primary-50' : ($isSolution && $mark === '' ? 'border-primary-200 bg-white' : 'border-gray-200 bg-white') }}
-                        {{ $mark === 'X' ? 'text-primary-600' : 'text-secondary-600' }}">
-                    {{ $mark }}
+                <div class="shadow-game flex aspect-square items-center justify-center rounded-2xl text-5xl font-black transition
+                        {{ $isTarget ? 'animate-pulse bg-primary-50 ring-4 ring-primary-400' : ($isSolution && $mark === '' ? 'bg-white ring-2 ring-primary-200' : 'bg-white ring-1 ring-black/5') }}">
+                    @if ($mark !== '')
+                        <span wire:key="pz-mark-{{ $i }}-{{ $mark }}"
+                              class="animate-pop-in {{ $mark === 'X' ? 'text-primary-500' : 'text-secondary-500' }}"
+                              style="text-shadow: 0 3px 0 color-mix(in oklab, currentColor 35%, transparent);">
+                            {{ $mark }}
+                        </span>
+                    @endif
                 </div>
             @endforeach
         </div>
@@ -92,15 +100,16 @@
 
     {{-- Question --}}
     @if ($question)
-        <div class="mt-6 rounded-2xl bg-white p-6 shadow-xs" wire:key="puzzle-question-{{ $question->id }}-{{ $attempt->moves_used }}">
+        <div class="shadow-game mt-6 rounded-2xl bg-white p-6 {{ $feedback === 'wrong' ? 'animate-shake' : '' }}"
+             wire:key="puzzle-question-{{ $question->id }}-{{ $attempt->moves_used }}">
             <div class="flex items-center justify-between">
-                <span class="rounded-full bg-primary-100 px-3 py-1 text-xs font-medium text-primary-800">
+                <span class="rounded-full bg-primary-100 px-3 py-1 text-xs font-bold text-primary-800">
                     Soal {{ count($claimedCells) + 1 }} dari {{ count($solutionCells) }}
                 </span>
                 @if ($feedback === 'correct')
-                    <span class="text-sm font-semibold text-green-600">Benar! ✓</span>
+                    <span class="animate-pop-in text-sm font-black text-green-600">Benar! ✓</span>
                 @elseif ($feedback === 'wrong')
-                    <span class="text-sm font-semibold text-red-600">Salah, coba lagi ✗</span>
+                    <span class="text-sm font-black text-red-600">Salah, coba lagi ✗</span>
                 @endif
             </div>
 
@@ -111,7 +120,7 @@
                 @foreach ($question->answers as $answerOption)
                     <button
                         wire:click="answer({{ $answerOption->id }})"
-                        class="rounded-lg border-2 border-gray-200 px-4 py-3 text-left text-gray-800 transition hover:border-primary-400 hover:bg-primary-50">
+                        class="rounded-xl border-2 border-b-4 border-gray-200 px-4 py-3 text-left font-semibold text-gray-800 transition hover:-translate-y-0.5 hover:border-primary-400 hover:bg-primary-50 active:translate-y-0">
                         {{ $answerOption->answer }}
                     </button>
                 @endforeach
@@ -120,8 +129,8 @@
     @endif
 
     {{-- Today's ranking --}}
-    <div class="mt-8 rounded-2xl bg-white p-6 shadow-xs">
-        <h2 class="text-lg font-bold text-gray-900">Peringkat Hari Ini</h2>
+    <div class="shadow-game mt-8 rounded-2xl bg-white p-6">
+        <h2 class="text-lg font-black tracking-tight text-gray-900">Peringkat Hari Ini</h2>
 
         @if ($ranking->isEmpty())
             <p class="mt-3 text-sm text-gray-500">Belum ada yang menyelesaikan puzzle hari ini. Jadilah yang pertama!</p>

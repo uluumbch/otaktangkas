@@ -15,7 +15,7 @@
     {{-- Header --}}
     <div class="flex items-center justify-between">
         <h1 class="text-lg font-bold text-gray-900">Mode Latihan</h1>
-        <button wire:click="newGame" class="rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50">
+        <button wire:click="newGame" class="btn-game-light px-3 py-1.5 text-sm">
             Game Baru
         </button>
     </div>
@@ -25,10 +25,10 @@
         @foreach (['tic_tac_toe' => '⭕ Tic-Tac-Toe', 'connect_four' => '🔴 Empat Sejajar'] as $type => $label)
             <button
                 wire:click="setGameType('{{ $type }}')"
-                class="rounded-full px-4 py-1.5 font-medium transition
+                class="cursor-pointer rounded-full px-4 py-1.5 font-bold transition
                     {{ $gameType === $type
-                        ? 'bg-primary-600 text-white shadow-xs'
-                        : 'bg-white text-gray-600 ring-1 ring-gray-300 hover:bg-gray-50' }}">
+                        ? 'shadow-game bg-linear-to-r from-primary-500 to-secondary-500 text-white'
+                        : 'bg-white text-gray-600 ring-1 ring-gray-300 hover:-translate-y-0.5 hover:bg-gray-50' }}">
                 {{ $label }}
             </button>
         @endforeach
