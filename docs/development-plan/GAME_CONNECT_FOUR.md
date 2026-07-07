@@ -13,8 +13,8 @@ the Status Log below shows exactly where to resume.
 |-------|-------|--------|--------|
 | CF-1 | Game engine + migration | ✅ done | `987818d` |
 | CF-2 | AI opponent | ✅ done | `34c59a6` |
-| CF-3 | Practice mode integration | ✅ done | see git log |
-| CF-4 | Quick Play integration | ⬜ pending | – |
+| CF-3 | Practice mode integration | ✅ done | `616c44c` |
+| CF-4 | Quick Play integration | ✅ done | see git log |
 | CF-5 | Closeout (docs sweep, full verify) | ⬜ pending | – |
 
 **Resume rule:** find the first non-✅ phase, re-run `php artisan test` to
@@ -119,16 +119,16 @@ Play Connect Four vs the AI from `/practice`.
 Real-time multiplayer Connect Four with game-aware matchmaking.
 
 ### Checklist
-- [ ] `findQuickPlayMatch()` filters on `game_type`; `Lobby` passes the
+- [x] `findQuickPlayMatch()` filters on `game_type`; `Lobby` passes the
       player's chosen game into both find and create
-- [ ] Lobby UI: game picker alongside the existing Play button
-- [ ] `Game\Play` view includes the board partial by `game_type` (multiplayer
+- [x] Lobby UI: game picker alongside the existing Play button
+- [x] `Game\Play` view includes the board partial by `game_type` (multiplayer
       component logic already game-agnostic after CF-3's refactor)
-- [ ] Tests: two players choosing Connect Four get paired; a Connect Four
+- [x] Tests: two players choosing Connect Four get paired; a Connect Four
       seeker does **not** join a waiting Tic-Tac-Toe match (regression);
       full multiplayer round-trip on a Connect Four board
-- [ ] Two-browser Playwright verify (both players see the same discs live)
-- [ ] Full suite green → commit `CF-4: Connect Four quick play`
+- [x] Two-browser Playwright verify (both players see the same discs live)
+- [x] Full suite green → commit `CF-4: Connect Four quick play`
 
 ## Phase CF-5: Closeout
 

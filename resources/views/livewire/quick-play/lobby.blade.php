@@ -9,6 +9,20 @@
             kamu akan menunggu sampai ada yang bergabung.
         </p>
 
+        {{-- Game type picker --}}
+        <div class="mt-5 flex justify-center gap-2 text-sm" role="group" aria-label="Pilih permainan">
+            @foreach (['tic_tac_toe' => '⭕ Tic-Tac-Toe', 'connect_four' => '🔴 Empat Sejajar'] as $type => $label)
+                <button
+                    wire:click="setGameType('{{ $type }}')"
+                    class="rounded-full px-4 py-1.5 font-medium transition
+                        {{ $gameType === $type
+                            ? 'bg-primary-600 text-white shadow-xs'
+                            : 'bg-white text-gray-600 ring-1 ring-gray-300 hover:bg-gray-50' }}">
+                    {{ $label }}
+                </button>
+            @endforeach
+        </div>
+
         <button
             wire:click="findMatch"
             wire:loading.attr="disabled"

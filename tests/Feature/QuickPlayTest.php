@@ -50,6 +50,78 @@ class QuickPlayTest extends TestCase
         $this->assertSame($seeker->id, $fresh->player2_id);
     }
 
+    public function test_connect_four_seekers_are_paired_together(): void
+    {
+        $host = User::factory()->create(['level' => 3]);
+        $waiting = app(MatchService::class)->createMatch($host, 'quick_play', ['game_type' => 'connect_four']);
+
+        $this->actingAs(User::factory()->create(['level' => 3]));
+
+        Livewire::test(Lobby::class)
+            ->call('setGameType', 'connect_four')
+            ->call('findMatch');
+
+        $fresh = $waiting->fresh();
+        $this->assertSame(MatchStatus::InProgress, $fresh->status);
+        $this->assertSame('connect_four', $fresh->game_type);
+    }
+
+    public function test_a_connect_four_seeker_does_not_join_a_tic_tac_toe_match(): void
+    {
+        $host = User::factory()->create(['level' => 3]);
+        $waiting = app(MatchService::class)->createMatch($host, 'quick_play'); // tic_tac_toe
+
+        $this->actingAs($seeker = User::factory()->create(['level' => 3]));
+
+        Livewire::test(Lobby::class)
+            ->call('setGameType', 'connect_four')
+            ->call('findMatch');
+
+        // The tic-tac-toe match is still waiting; the seeker opened a new
+        // connect_four match instead of being seated at the wrong board.
+        $this->assertSame(MatchStatus::Waiting, $waiting->fresh()->status);
+        $this->assertNull($waiting->fresh()->player2_id);
+
+        $created = GameMatch::where('player1_id', $seeker->id)->first();
+        $this->assertSame('connect_four', $created->game_type);
+    }
+
+    public function test_connect_four_multiplayer_round_trip(): void
+    {
+        $host = User::factory()->create();
+        $svc = app(MatchService::class);
+        $match = $svc->createMatch($host, 'quick_play', ['game_type' => 'connect_four']);
+        $guest = User::factory()->create();
+        $svc->joinMatch($match, $guest);
+
+        // Host (player1) drops into column 3.
+        $this->actingAs($host);
+        $correct = $match->fresh()->currentQuestion->correctAnswer;
+
+        Livewire::test(Play::class, ['match' => $match->fresh()])
+            ->call('selectCell', '3')
+            ->assertSet('selectedPosition', '3')
+            ->call('answer', $correct->id)
+            ->assertSet('feedback', 'correct');
+
+        $fresh = $match->fresh();
+        $this->assertSame('X', $fresh->board_state[5][3]);
+        $this->assertSame($guest->id, $fresh->current_turn_user_id);
+
+        // Guest (player2) answers next and stacks on the same column.
+        $this->actingAs($guest);
+        $correct = $fresh->currentQuestion->correctAnswer;
+
+        Livewire::test(Play::class, ['match' => $fresh])
+            ->call('selectCell', '3')
+            ->call('answer', $correct->id)
+            ->assertSet('feedback', 'correct');
+
+        $fresh = $match->fresh();
+        $this->assertSame('O', $fresh->board_state[4][3]); // gravity stacked
+        $this->assertSame($host->id, $fresh->current_turn_user_id);
+    }
+
     public function test_a_non_participant_cannot_view_a_match(): void
     {
         $host = User::factory()->create();

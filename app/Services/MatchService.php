@@ -299,6 +299,7 @@ class MatchService
 
         return GameMatch::where('status', \App\Enums\MatchStatus::Waiting)
             ->where('mode', \App\Enums\MatchMode::QuickPlay)
+            ->where('game_type', $options['game_type'] ?? 'tic_tac_toe')
             ->where('player1_id', '!=', $user->id)
             ->whereHas('player1', fn ($query) => $query->whereBetween('level', [
                 max(1, $user->level - $levelRange),
