@@ -21,7 +21,7 @@ if work is interrupted.
 
 | Phase | Scope | Status | Commit |
 |-------|-------|--------|--------|
-| MM-1 | Game engine + AI | ⬜ pending | – |
+| MM-1 | Game engine + AI | ✅ done | see git log |
 | MM-2 | Practice mode integration | ⬜ pending | – |
 | MM-3 | Quick Play integration | ⬜ pending | – |
 | MM-4 | Closeout (docs sweep, full verify) | ⬜ pending | – |
@@ -83,26 +83,26 @@ phase's commit.
 `GameFactory`. Engine + AI + tests only, no UI.
 
 ### Checklist
-- [ ] `app/Services/GameEngine/Games/MemoryMatchGame.php`
-  - [ ] `initialize()`: 8 shuffled emoji pairs, empty matched/revealed/scores
-  - [ ] `makeMove()`: validates the pair (format, range, distinct,
+- [x] `app/Services/GameEngine/Games/MemoryMatchGame.php`
+  - [x] `initialize()`: 8 shuffled emoji pairs, empty matched/revealed/scores
+  - [x] `makeMove()`: validates the pair (format, range, distinct,
         unclaimed), reveals both cards, claims + scores on a match, records
         `last_flip` and `revealed`; wrong answers make no move
-  - [ ] `checkGameOver()`: early clinch at 5 pairs, full-board compare,
+  - [x] `checkGameOver()`: early clinch at 5 pairs, full-board compare,
         4–4 draw
-  - [ ] `getValidMoves()`: all `"a|b"` pairs (a < b) of unclaimed indexes
-  - [ ] `getAIMove()`: easy random / medium 60% known-match / hard
+  - [x] `getValidMoves()`: all `"a|b"` pairs (a < b) of unclaimed indexes
+  - [x] `getAIMove()`: easy random / medium 60% known-match / hard
         known-match then prefer-unrevealed
-  - [ ] `getGameState()`: same shape as the other games
-- [ ] Register `memory_match` in `GameFactory`
-- [ ] Unit tests: pair distribution, claim + score, miss reveals without
+  - [x] `getGameState()`: same shape as the other games
+- [x] Register `memory_match` in `GameFactory`
+- [x] Unit tests: pair distribution, claim + score, miss reveals without
       claiming, claimed/duplicate/malformed positions rejected, early
       clinch, draw, valid-move shrinkage, AI legality, hard AI takes a
       known match and prefers unrevealed cards otherwise
-- [ ] Feature check: `MatchService::createMatch` with
+- [x] Feature check: `MatchService::createMatch` with
       `['game_type' => 'memory_match']` initializes a 16-card board through
       the existing enum column
-- [ ] Full suite green → commit `MM-1: Memory Match engine + AI`
+- [x] Full suite green → commit `MM-1: Memory Match engine + AI`
 
 ## Phase MM-2: Practice Mode Integration
 
